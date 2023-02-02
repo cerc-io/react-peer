@@ -7,37 +7,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 * Install dependencies:
 
   ```bash
+  # In repo root
   yarn install
   ```
-
-* Build the peer package:
-
-  ```bash
-  # From repo root
-  cd packages/peer
-
-  yarn build
-  ```
-
-* (Optional) Create and export a peer id for the relay node:
-
-  ```bash
-  # In packages/peer
-  yarn create-peer --file [PEER_ID_FILE_PATH]
-  ```
-
-  * `file (f)`: file path to export the peer id to (json) (default: logs to console)
-
-* (Optional) Run a local relay node:
-
-  ```bash
-  # In packages/peer
-  yarn relay-node --port [LISTEN_PORT] --peer-id-file [PEER_ID_FILE_PATH] --relay-peers [RELAY_PEERS_FILE_PATH]
-  ```
-
-  * `port`: Port to start listening on (default: `9090`)
-  * `peer-id-file`: file path for peer id to be used (json)
-  * `relay-peers`: file path for relay peer multiaddr(s) to dial on startup (json)
 
 * Set the relay node multiaddr in the [env](./.env) file:
 
@@ -56,14 +28,50 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Development
 
-* After making changes in [peer](../peer/) package run build
+* Build the `@cerc-io/peer` package after making changes:
 
   ```bash
-  # In packages/peer
+  # In watcher-ts/packages/peer
   yarn build
   ```
 
-* The react app server running in development mode should recompile after changes are made in peer package
+* Register package for yarn link:
+
+  ```bash
+  # In watcher-ts/packages/peer
+  yarn link
+  ```
+
+- Yarn link the `@cerc-io/peer` package:
+
+  ```bash
+  # In repo root
+  yarn link "@cerc-io/peer"
+  ```
+
+* (Optional) Create and export a peer id for the relay node:
+
+  ```bash
+  # In watcher-ts/packages/peer
+  yarn create-peer --file [PEER_ID_FILE_PATH]
+  ```
+
+  * `file (f)`: file path to export the peer id to (json) (default: logs to console)
+
+* (Optional) Run a local relay node:
+
+  ```bash
+  # In watcher-ts/packages/peer
+  yarn relay-node --port [LISTEN_PORT] --peer-id-file [PEER_ID_FILE_PATH] --relay-peers [RELAY_PEERS_FILE_PATH]
+  ```
+
+  * `port`: Port to start listening on (default: `9090`)
+  * `peer-id-file`: file path for peer id to be used (json)
+  * `relay-peers`: file path for relay peer multiaddr(s) to dial on startup (json)
+
+* Follow [instructions](#instructions) to start the app
+
+* The react app server running in development mode should recompile after building the `@cerc-io/peer` package
 
 ## Available Scripts
 
