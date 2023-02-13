@@ -7,8 +7,9 @@ import { AppBar, Box, CssBaseline, Paper, Table, TableBody, TableCell, TableCont
 
 import './App.css';
 import { useForceUpdate } from './hooks/forceUpdate';
+import Metrics from './components/Metrics';
+import { REFRESH_INTERVAL } from './constants';
 
-const REFRESH_INTERVAL = 5000; // ms
 const TEST_TOPIC = 'test';
 
 declare global {
@@ -183,6 +184,8 @@ function App() {
               </>
             )
           }
+          <br/>
+          <Metrics />
         </Box>
       </main>
     </ThemeProvider>
