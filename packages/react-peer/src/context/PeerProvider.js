@@ -11,30 +11,30 @@ export const PeerProvider = ({ relayNode, children }) => {
     const init = async () => {
       // TODO: Validate prop relayNode
       if (!relayNode) {
-        throw new Error('REACT_APP_RELAY_NODE not set')
+        throw new Error('REACT_APP_RELAY_NODE not set');
       }
 
-      const peer = new Peer(relayNode)
+      const peer = new Peer(relayNode);
 
       // Try to get peer id from browser's local storage
       let peerIdFromStorage = localStorage.getItem('PeerId');
-      let peerIdJson
+      let peerIdObj;
 
       if (peerIdFromStorage) {
-        console.log('Using saved peer id; keep the app open in only one browser tab at a time')
-        peerIdJson = JSON.parse(peerIdFromStorage)
+        console.log('Using saved peer id; keep the app open in only one browser tab at a time');
+        peerIdObj = JSON.parse(peerIdFromStorage);
       } else {
-        console.log('Creating a new peer id')
-        peerIdJson = await createPeerId();
+        console.log('Creating a new peer id');
+        peerIdObj = await createPeerId();
       }
 
-      await peer.init(peerIdJson);
+      await peer.init(peerIdObj);
 
       // Debug
       console.log(`Peer ID: ${peer.peerId.toString()}`);
 
+      localStorage.setItem('PeerId', JSON.stringify(peerIdObj));
       setPeer(peer);
-      localStorage.setItem('PeerId', JSON.stringify(peerIdJson));
     };
 
     init();
@@ -42,7 +42,7 @@ export const PeerProvider = ({ relayNode, children }) => {
     return () => {
       if (peer.node) {
         // TODO: Await for peer close
-        peer.close()
+        peer.close();
       }
     }
   }, []);
