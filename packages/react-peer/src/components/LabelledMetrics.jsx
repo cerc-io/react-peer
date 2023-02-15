@@ -1,26 +1,19 @@
 import React from 'react';
 
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import { Metric } from 'promjs'
 
-type LabelledMetricsProps = {
-  metricsName: string;
-  label: string;
-  data?: Metric<number>[];
-};
-
-function LabelledMetrics ({ metricsName, label, data = [] }: LabelledMetricsProps) {
+function LabelledMetrics ({ metricsName, label, data = [] }) {
   return (
     <Box>
       <Typography variant="subtitle2" color="inherit" noWrap>
-        {metricsName}
+        <b>{metricsName}</b>
       </Typography>
       <TableContainer component={Paper}>
         <Table size='small'>
           <TableHead>
             <TableRow>
-              <TableCell>{label}</TableCell>
-              <TableCell>Value</TableCell>
+              <TableCell size="small"><b>{label}</b></TableCell>
+              <TableCell size="small" align="right"><b>value</b></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -28,8 +21,8 @@ function LabelledMetrics ({ metricsName, label, data = [] }: LabelledMetricsProp
               data.map(({ labels = {}, value }) => {
                 return (
                   <TableRow key={labels[label]}>
-                    <TableCell><b>{labels[label]}</b></TableCell>
-                    <TableCell>{value}</TableCell>
+                    <TableCell size="small">{labels[label]}</TableCell>
+                    <TableCell size="small" align="right">{value}</TableCell>
                   </TableRow>
                 );
               })

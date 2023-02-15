@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { PeerContext } from '@cerc-io/react-peer'
+import { PeerContext, Metrics } from '@cerc-io/react-peer'
 
 import { Peer } from '@cerc-io/peer';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -7,7 +7,6 @@ import { AppBar, Box, CssBaseline, Paper, Table, TableBody, TableCell, TableCont
 
 import './App.css';
 import { useForceUpdate } from './hooks/forceUpdate';
-import Metrics from './components/Metrics';
 import { REFRESH_INTERVAL } from './constants';
 
 const TEST_TOPIC = 'test';
