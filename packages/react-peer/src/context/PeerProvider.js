@@ -4,17 +4,20 @@ import { Peer, createPeerId } from '@cerc-io/peer';
 
 import { PeerContext } from './PeerContext';
 
-export const PeerProvider = ({ relayNode, children }) => {
+export const PeerProvider = ({ relayNodes, children }) => {
   const [peer, setPeer] = React.useState(null);
 
   React.useEffect(() => {
     const init = async () => {
-      // TODO: Validate prop relayNode
-      if (!relayNode) {
-        throw new Error('REACT_APP_RELAY_NODE not set');
+      // TODO: Validate prop relayNodes
+      if (relayNodes.length === 0) {
+        throw new Error('Relay nodes not set');
       }
 
-      const peer = new Peer(relayNode);
+      const randomIndex = Math.floor(Math.random() * relayNodes.length);
+      const randomRelayNode = relayNodes[randomIndex];
+
+      const peer = new Peer(randomRelayNode);
 
       // Try to get peer id from browser's local storage
       let peerIdFromStorage = localStorage.getItem('PeerId');
