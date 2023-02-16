@@ -27,10 +27,13 @@ export function Metrics({ refreshInterval = DEFAULT_REFRESH_INTERVAL }) {
   const [metricsData, setMetricsData] = useState();
 
   useEffect(() => {
-    const intervalID = setInterval(async () => {
+    const updateMetrics = async () => {
       const data = await peer.metrics.getMetricsAsMap();
       setMetricsData(data);
-    }, refreshInterval);
+    }
+
+    const intervalID = setInterval(updateMetrics, refreshInterval);
+    updateMetrics();
 
     return () => {
       clearInterval(intervalID);
@@ -38,10 +41,7 @@ export function Metrics({ refreshInterval = DEFAULT_REFRESH_INTERVAL }) {
   }, [peer])
 
   return (
-    <Box>
-      <Typography variant="subtitle2" color="inherit" noWrap>
-        <b>Metrics</b>
-      </Typography>
+    <Box mt={1}>
       <Grid container spacing={1}>
         <Grid item xs={3}>
           <LabelledMetrics

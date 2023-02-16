@@ -6,7 +6,7 @@ import { useForceUpdate } from '../hooks/forceUpdate';
 import { PeerContext } from '../context/PeerContext';
 import { DEFAULT_REFRESH_INTERVAL } from '../constants';
 
-export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL }) {
+export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
   const forceUpdate = useForceUpdate();
   const peer = useContext(PeerContext);
 
@@ -36,11 +36,11 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL }) {
   }, [forceUpdate])
 
   return (
-    <Box>
+    <Box {...props}>
       <Typography variant="subtitle2" sx={{ marginBottom: 1/2 }} color="inherit" noWrap>
         <b>Self Node Info</b>
       </Typography>
-      <TableContainer sx={{ marginBottom: 1/2 }} component={Paper}>
+      <TableContainer sx={{ marginBottom: 2 }} component={Paper}>
         <Table size="small">
           <TableBody>
             <TableRow>
@@ -50,8 +50,6 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL }) {
               <TableCell size="small" colSpan={3}>{process.env.REACT_APP_RELAY_NODE}</TableCell>
               <TableCell size="small" align="right"><b>Node started</b></TableCell>
               <TableCell size="small" sx={{ width: 50 }}>{peer && peer.node && peer.node.isStarted().toString()}</TableCell>
-            </TableRow>
-            <TableRow>
             </TableRow>
             <TableRow>
               <TableCell size="small"><b>Multiaddrs</b></TableCell>
@@ -93,24 +91,35 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL }) {
                     <TableRow>
                       <TableCell size="small" sx={{ width: 150 }}><b>Connection ID</b></TableCell>
                       <TableCell size="small">{connection.id}</TableCell>
-                      <TableCell size="small" align="right"><b>Peer ID</b></TableCell>
-                      <TableCell size="small">{connection.remotePeer.toString()}</TableCell>
                       <TableCell size="small" align="right"><b>Direction</b></TableCell>
                       <TableCell size="small">{connection.stat.direction}</TableCell>
                       <TableCell size="small" align="right"><b>Status</b></TableCell>
                       <TableCell size="small">{connection.stat.status}</TableCell>
+                      <TableCell size="small" align="right"><b>Type</b></TableCell>
+                      <TableCell size="small">{connection.remoteAddr.toString().includes('p2p-circuit/p2p') ? "relayed" : "direct"}</TableCell>
                     </TableRow>
                     <TableRow>
+                      <TableCell size="small"><b>Peer ID</b></TableCell>
+                      <TableCell size="small" colSpan={4}>{connection.remotePeer.toString()}</TableCell>
+                      <TableCell size="small" align="right"><b>Latency (ms)</b></TableCell>
+                      <TableCell size="small" colSpan={2}>
+                        {
+                          peer.getLatencyData(connection.remotePeer)
+                            .map((value, index) => {
+                              return index === 0 ?
+                                (<span key={index}><b>{value}</b>&nbsp;</span>) :
+                                (<span key={index}>{value}&nbsp;</span>)
+                            })
+                        }
+                      </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell size="small" sx={{ width: 150 }}><b>Connected multiaddr</b></TableCell>
-                      <TableCell size="small" colSpan={5}>
+                      <TableCell size="small" colSpan={7}>
                         {connection.remoteAddr.toString()}
                         &nbsp;
                         <b>{connection.remoteAddr.toString() === process.env.REACT_APP_RELAY_NODE && "(RELAY NODE)"}</b>
                       </TableCell>
-                      <TableCell size="small" align="right"><b>Type</b></TableCell>
-                      <TableCell size="small">{connection.remoteAddr.toString().includes('p2p-circuit/p2p') ? "relayed" : "direct"}</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
