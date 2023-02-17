@@ -100,7 +100,15 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...prop
                     </TableRow>
                     <TableRow>
                       <TableCell size="small"><b>Peer ID</b></TableCell>
-                      <TableCell size="small" colSpan={4}>{connection.remotePeer.toString()}</TableCell>
+                      <TableCell size="small" colSpan={2}>{connection.remotePeer.toString()}</TableCell>
+                      <TableCell align="right"><b>Node type</b></TableCell>
+                      <TableCell>
+                        {
+                          peer.isRelayPeerMultiaddr(connection.remoteAddr.toString())
+                            ? peer.isPrimaryRelay(connection.remoteAddr.toString()) ? "Relay (Primary)" : "Relay (Secondary)"
+                            : "Peer"
+                        }
+                      </TableCell>
                       <TableCell size="small" align="right"><b>Latency (ms)</b></TableCell>
                       <TableCell size="small" colSpan={2}>
                         {
@@ -115,11 +123,7 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...prop
                     </TableRow>
                     <TableRow>
                       <TableCell size="small" sx={{ width: 150 }}><b>Connected multiaddr</b></TableCell>
-                      <TableCell size="small" colSpan={7}>
-                        {connection.remoteAddr.toString()}
-                        &nbsp;
-                        <b>{connection.remoteAddr.equals(peer.relayNodeMultiaddr) && "(RELAY NODE)"}</b>
-                      </TableCell>
+                      <TableCell size="small" colSpan={7}>{connection.remoteAddr.toString()}</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
