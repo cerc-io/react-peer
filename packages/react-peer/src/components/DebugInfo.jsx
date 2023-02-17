@@ -47,7 +47,7 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...prop
               <TableCell size="small"><b>Peer ID</b></TableCell>
               <TableCell size="small">{peer && peer.peerId && peer.peerId.toString()}</TableCell>
               <TableCell size="small" align="right"><b>Relay node</b></TableCell>
-              <TableCell size="small" colSpan={3}>{process.env.REACT_APP_RELAY_NODE}</TableCell>
+              <TableCell size="small">{peer && peer.relayNodeMultiaddr.toString()}</TableCell>
               <TableCell size="small" align="right"><b>Node started</b></TableCell>
               <TableCell size="small" sx={{ width: 50 }}>{peer && peer.node && peer.node.isStarted().toString()}</TableCell>
             </TableRow>
@@ -77,7 +77,7 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...prop
       {
         peer && peer.node && (
           <>
-            <Typography variant="subtitle2" sx={{ marginBottom: 1/2 }} color="inherit" noWrap>
+            <Typography variant="subtitle2" sx={{ marginBottom: 1.5 }} color="inherit" noWrap>
               <b>
                 Remote Peer Connections
                 &nbsp;
@@ -85,7 +85,7 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...prop
               </b>
             </Typography>
             {peer.node.getConnections().map(connection => (
-              <TableContainer sx={{ mb: 1/2 }} key={connection.id} component={Paper}>
+              <TableContainer sx={{ mb: 1.5 }} key={connection.id} component={Paper}>
                 <Table size="small">
                   <TableBody>
                     <TableRow>
@@ -118,7 +118,7 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...prop
                       <TableCell size="small" colSpan={7}>
                         {connection.remoteAddr.toString()}
                         &nbsp;
-                        <b>{connection.remoteAddr.toString() === process.env.REACT_APP_RELAY_NODE && "(RELAY NODE)"}</b>
+                        <b>{connection.remoteAddr.equals(peer.relayNodeMultiaddr) && "(RELAY NODE)"}</b>
                       </TableCell>
                     </TableRow>
                   </TableBody>
