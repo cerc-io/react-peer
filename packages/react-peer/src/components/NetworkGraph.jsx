@@ -80,21 +80,19 @@ function NetworkGraph ({ peer }) {
   })
 
   const onMouseOverNode = useCallback((nodeId) => {
-    let multiaddrs = peer.node.getMultiaddrs().map(multiaddr => multiaddr.toString())
+    let multiaddrs = peer.node.getMultiaddrs().map(multiaddr => multiaddr.toString());
 
     if (nodeId !== peer.peerId.toString()) {
-      console.log(remotePeerNodes)
       const remotePeerNode = remotePeerNodes.find(remotePeerNode => remotePeerNode.id === nodeId);
-      console.log(remotePeerNode)
-      multiaddrs = [remotePeerNode.multiaddr]
+      multiaddrs = [remotePeerNode.multiaddr];
     }
 
     setHoveredPeer({
       id: nodeId,
       multiaddrs
-    })
+    });
 
-    setAnchorEl(document.getElementById(nodeId))
+    setAnchorEl(document.getElementById(nodeId));
   }, [peer, remotePeerNodes])
 
   const data = {
