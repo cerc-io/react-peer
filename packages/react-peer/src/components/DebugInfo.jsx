@@ -37,7 +37,7 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...prop
 
   return (
     <Box {...props}>
-      <Typography variant="subtitle2" sx={{ marginBottom: 1/2 }} color="inherit" noWrap>
+      <Typography variant="subtitle2" sx={{ marginBottom: 1 }} color="inherit" noWrap>
         <b>Self Node Info</b>
       </Typography>
       <TableContainer sx={{ marginBottom: 2 }} component={Paper}>
@@ -77,7 +77,7 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...prop
       {
         peer && peer.node && (
           <>
-            <Typography variant="subtitle2" sx={{ marginBottom: 1.5 }} color="inherit" noWrap>
+            <Typography variant="subtitle2" color="inherit" noWrap>
               <b>
                 Remote Peer Connections
                 &nbsp;
@@ -85,7 +85,7 @@ export function DebugInfo ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...prop
               </b>
             </Typography>
             {peer.node.getConnections().map(connection => (
-              <TableContainer sx={{ mb: 1.5 }} key={connection.id} component={Paper}>
+              <TableContainer sx={{ mt: 1 }} key={connection.id} component={Paper}>
                 <Table size="small">
                   <TableBody>
                     <TableRow>

@@ -3,11 +3,20 @@ import { PeerContext, Metrics, DebugInfo, PeerNetwork } from '@cerc-io/react-pee
 
 import { Peer } from '@cerc-io/peer';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { AppBar, Box, CssBaseline, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Card, CardContent, CssBaseline, Toolbar, Typography } from '@mui/material';
 
 import './App.css';
 
 const TEST_TOPIC = 'test';
+
+const STYLES = {
+  cardContent: {
+    padding: 1,
+    '&:last-child': {
+      padding: 1
+    }
+  }
+}
 
 declare global {
   interface Window {
@@ -72,11 +81,23 @@ function App() {
             px: 3
           }}
         >
-          <DebugInfo />
-          <Typography sx={{ mt: 2 }}><b>Graph</b></Typography>
-          <PeerNetwork />
-          <Typography><b>Metrics</b></Typography>
-          <Metrics />
+          <Card raised>
+            <CardContent sx={STYLES.cardContent}>
+              <DebugInfo />
+            </CardContent>
+          </Card>
+          <Card sx={{ marginTop: 2 }} raised>
+            <CardContent sx={STYLES.cardContent}>
+              <Typography><b>Graph</b></Typography>
+              <PeerNetwork />
+            </CardContent>
+          </Card>
+          <Card sx={{ marginTop: 2 }} raised>
+            <CardContent sx={STYLES.cardContent}>
+              <Typography><b>Metrics</b></Typography>
+              <Metrics />
+            </CardContent>
+          </Card>
         </Box>
       </main>
     </ThemeProvider>
