@@ -1485,19 +1485,21 @@
     wherearewe "^2.0.0"
     xsalsa20 "^1.1.0"
 
-"@cerc-io/peer@^0.2.27":
-  version "0.2.27"
-  resolved "https://git.vdb.to/api/packages/cerc-io/npm/%40cerc-io%2Fpeer/-/0.2.27/peer-0.2.27.tgz#eb2ef231f4703cf1d30fc1e1ffc0fe8629f4224c"
-  integrity sha512-y/jF26u/YTWVvRgQE1kqMvy3/y7IugmmsElWQX33WRV6ufD+5293GA12OdBb2VAmT5I91uEl7jVAyMK3ol8LPw==
+"@cerc-io/peer@^0.2.28":
+  version "0.2.28"
+  resolved "https://git.vdb.to/api/packages/cerc-io/npm/%40cerc-io%2Fpeer/-/0.2.28/peer-0.2.28.tgz#b3fbaafa02045f2c1a782aa4ef9f8312a3f44b65"
+  integrity sha512-YLdQ+7Wyr1k7QxMKd3LkB05RNdX6h/nMKjRLsD8WokEaThzoCruTRU0Fx/lCbgQeHM2mOjLrymF9J9yTnyF/IA==
   dependencies:
     "@cerc-io/libp2p" "0.42.2-laconic-0.1.1"
-    "@cerc-io/webrtc-direct" "^5.0.0-laconic-0.1.1"
+    "@cerc-io/prometheus-metrics" "1.1.4"
+    "@cerc-io/webrtc-direct" "^5.0.0-laconic-0.1.3"
     "@chainsafe/libp2p-noise" "^11.0.0"
     "@libp2p/floodsub" "^6.0.0"
     "@libp2p/mplex" "^7.1.1"
     "@libp2p/peer-id-factory" "^2.0.0"
     "@libp2p/pubsub-peer-discovery" "^8.0.0"
     "@multiformats/multiaddr" "^11.1.4"
+    buffer "^6.0.3"
     debug "^4.3.1"
     it-length-prefixed "^8.0.4"
     it-map "^2.0.0"
@@ -1506,18 +1508,32 @@
     node-pre-gyp "^0.13.0"
     p-event "^5.0.1"
     uint8arrays "^4.0.3"
+    unique-names-generator "^4.7.1"
     wrtc "^0.4.7"
     yargs "^17.0.1"
 
-"@cerc-io/webrtc-direct@^5.0.0-laconic-0.1.1":
-  version "5.0.0-laconic-0.1.1"
-  resolved "https://git.vdb.to/api/packages/cerc-io/npm/%40cerc-io%2Fwebrtc-direct/-/5.0.0-laconic-0.1.1/webrtc-direct-5.0.0-laconic-0.1.1.tgz#d2a709551d1ff25675f247ea9224af26fc6b0aeb"
-  integrity sha512-FvzC1DMgV8TrIKm5rsIoLDcoIxw9L97gc3Xl+7uYA49l70WmbKPBWuCtLnkfqRRWiWYqFTXeyS2zXpcPaMUtJQ==
+"@cerc-io/prometheus-metrics@1.1.4":
+  version "1.1.4"
+  resolved "https://git.vdb.to/api/packages/cerc-io/npm/%40cerc-io%2Fprometheus-metrics/-/1.1.4/prometheus-metrics-1.1.4.tgz#51006b0b5bf6168394390c78072a1c0bb2b02f28"
+  integrity sha512-Mqg7o1Wer8zKv3/0NWB1sCMmW8hyYI0Fw58d/MR62+5EDZ2yPhwMUrLZUhyqdo3qXJzxMylAPSVx8URDcthmKA==
   dependencies:
-    "@cerc-io/webrtc-peer" "^2.0.2-laconic-0.1.0"
+    "@libp2p/interface-connection" "^3.0.2"
+    "@libp2p/interface-metrics" "^4.0.2"
+    "@libp2p/logger" "^2.0.2"
+    it-foreach "^1.0.0"
+    it-stream-types "^1.0.4"
+    promjs "^0.4.2"
+
+"@cerc-io/webrtc-direct@^5.0.0-laconic-0.1.3":
+  version "5.0.0-laconic-0.1.3"
+  resolved "https://git.vdb.to/api/packages/cerc-io/npm/%40cerc-io%2Fwebrtc-direct/-/5.0.0-laconic-0.1.3/webrtc-direct-5.0.0-laconic-0.1.3.tgz#14802ba88899c904bddc327082d96cb541523ffb"
+  integrity sha512-HiRn2eoXbOFM2Dklecr+H76BB0H1H/k4I59Hnjj7tppdlr6wwts9MuA/SX0draXYEiRA5Ft4vXrfo469fGS68A==
+  dependencies:
+    "@cerc-io/webrtc-peer" "^2.0.2-laconic-0.1.4"
     "@libp2p/interface-transport" "^2.0.0"
     "@libp2p/interfaces" "^3.0.3"
     "@libp2p/logger" "^2.0.1"
+    "@libp2p/peer-id" "^2.0.1"
     "@libp2p/utils" "^3.0.2"
     "@multiformats/mafmt" "^11.0.3"
     "@multiformats/multiaddr" "^11.0.0"
@@ -1526,15 +1542,18 @@
     err-code "^3.0.0"
     multiformats "^11.0.0"
     native-fetch "^4.0.2"
+    p-defer "^4.0.0"
     p-event "^5.0.1"
+    timed-cache "^2.0.0"
+    timeout-abort-controller "^3.0.0"
     uint8arrays "^4.0.2"
     undici "^5.2.0"
     wherearewe "^2.0.1"
 
-"@cerc-io/webrtc-peer@^2.0.2-laconic-0.1.0":
-  version "2.0.2-laconic-0.1.0"
-  resolved "https://git.vdb.to/api/packages/cerc-io/npm/%40cerc-io%2Fwebrtc-peer/-/2.0.2-laconic-0.1.0/webrtc-peer-2.0.2-laconic-0.1.0.tgz#453d949a593ac7c6954778eb710385f69a566a82"
-  integrity sha512-ikNtTqhKz4UTOu1DHGZzzLmFJus+mos/ctRxBVHcs4rhsv2GXnOYgtEpbPQlKoOSgj3Ewsy50x3kcM1k4klwOg==
+"@cerc-io/webrtc-peer@^2.0.2-laconic-0.1.4":
+  version "2.0.2-laconic-0.1.4"
+  resolved "https://git.vdb.to/api/packages/cerc-io/npm/%40cerc-io%2Fwebrtc-peer/-/2.0.2-laconic-0.1.4/webrtc-peer-2.0.2-laconic-0.1.4.tgz#9ce10477ad4f6391de61a3f6f9a6063b09c0e196"
+  integrity sha512-tCXLCmDW1NKjn9m2ymgh6GbN3YWvEHMIsupW27L2Xt3q02DmWM7acZB04mjvuCDtQt5FC7ok0B6yTQ8a1liXnQ==
   dependencies:
     "@libp2p/interfaces" "^3.0.2"
     "@libp2p/logger" "^2.0.0"
@@ -3064,7 +3083,7 @@
   resolved "https://registry.npmjs.org/@libp2p/interfaces/-/interfaces-3.3.1.tgz"
   integrity sha512-3N+goQt74SmaVOjwpwMPKLNgh1uDQGw8GD12c40Kc86WOq0qvpm3NfACW+H8Su2X6KmWjCSMzk9JWs9+8FtUfg==
 
-"@libp2p/logger@^2.0.0", "@libp2p/logger@^2.0.1", "@libp2p/logger@^2.0.5":
+"@libp2p/logger@^2.0.0", "@libp2p/logger@^2.0.1", "@libp2p/logger@^2.0.2", "@libp2p/logger@^2.0.5":
   version "2.0.5"
   resolved "https://registry.npmjs.org/@libp2p/logger/-/logger-2.0.5.tgz"
   integrity sha512-WEhxsc7+gsfuTcljI4vSgW/H2f18aBaC+JiO01FcX841Wxe9szjzHdBLDh9eqygUlzoK0LEeIBfctN7ibzus5A==
@@ -3137,7 +3156,7 @@
     uint8arraylist "^2.0.0"
     uint8arrays "^4.0.2"
 
-"@libp2p/peer-id@^2.0.0":
+"@libp2p/peer-id@^2.0.0", "@libp2p/peer-id@^2.0.1":
   version "2.0.1"
   resolved "https://registry.npmjs.org/@libp2p/peer-id/-/peer-id-2.0.1.tgz"
   integrity sha512-uGIR4rS+j+IzzIu0kih4MonZEfRmjGNfXaSPMIFOeMxZItZT6TIpxoVNYxHl4YtneSFKzlLnf9yx9EhRcyfy8Q==
@@ -6243,6 +6262,14 @@ buffer@^5.5.0:
   dependencies:
     base64-js "^1.3.1"
     ieee754 "^1.1.13"
+
+buffer@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/buffer/-/buffer-6.0.3.tgz#2ace578459cc8fbe2a70aaa8f52ee63b6a74c6c6"
+  integrity sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==
+  dependencies:
+    base64-js "^1.3.1"
+    ieee754 "^1.2.1"
 
 builtin-modules@^3.1.0:
   version "3.3.0"
@@ -10700,7 +10727,7 @@ identity-obj-proxy@^3.0.0:
   dependencies:
     harmony-reflect "^1.4.6"
 
-ieee754@^1.1.13, ieee754@^1.1.4:
+ieee754@^1.1.13, ieee754@^1.1.4, ieee754@^1.2.1:
   version "1.2.1"
   resolved "https://registry.npmjs.org/ieee754/-/ieee754-1.2.1.tgz"
   integrity sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==
@@ -12862,12 +12889,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.npmjs.org/lodash.uniq/-/lodash.uniq-4.5.0.tgz"
   integrity sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==
 
-lodash@^4.0.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.20, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.7.0:
-  version "4.17.21"
-  resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
-  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
-
-lodash@^4.17.21:
+lodash@^4.0.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -18286,6 +18308,11 @@ thunky@^1.0.2:
   resolved "https://registry.npmjs.org/thunky/-/thunky-1.1.0.tgz"
   integrity sha512-eHY7nBftgThBqOyHGVN+l8gF0BucP09fMo0oO/Lb0w1OF80dJv+lDVpXG60WMQvkcxAkNybKsrEIE3ZtKGmPrA==
 
+timed-cache@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/timed-cache/-/timed-cache-2.0.0.tgz#34472e5dbb9c32075a0fe15883ef73d87be13f3d"
+  integrity sha512-9owe3VtDCtZKo8bfk5bSC4tSzIRP65doXI0i2oFWNP4VjQDwoRIsADynZQZz6XXK7exL7bOuI3HExFQ9LGi3tQ==
+
 timeout-abort-controller@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/timeout-abort-controller/-/timeout-abort-controller-3.0.0.tgz"
@@ -18698,6 +18725,11 @@ unique-filename@^2.0.0:
   integrity sha512-ODWHtkkdx3IAR+veKxFV+VBkUMcN+FaqzUUd7IZzt+0zhDZFPFxhlqwPF3YQvMHx1TD0tdgYl+kuPnJ8E6ql7A==
   dependencies:
     unique-slug "^3.0.0"
+
+unique-names-generator@^4.7.1:
+  version "4.7.1"
+  resolved "https://registry.yarnpkg.com/unique-names-generator/-/unique-names-generator-4.7.1.tgz#966407b12ba97f618928f77322cfac8c80df5597"
+  integrity sha512-lMx9dX+KRmG8sq6gulYYpKWZc9RlGsgBR6aoO8Qsm3qvkSJ+3rAymr+TnV8EDMrIrwuFJ4kruzMWM/OpYzPoow==
 
 unique-slug@^2.0.0:
   version "2.0.2"
