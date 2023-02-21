@@ -80,7 +80,7 @@ export function DebugInfo ({ relayNodes, refreshInterval = DEFAULT_REFRESH_INTER
                 label="Primary Relay"
                 onChange={event => setPrimaryRelay(event.target.value)}
               >
-                <MenuItem value="">Random</MenuItem>
+                <MenuItem value="">{"<random>"}</MenuItem>
                 {relayNodes.map(relayNode => (
                   <MenuItem
                     value={relayNode}
@@ -94,11 +94,11 @@ export function DebugInfo ({ relayNodes, refreshInterval = DEFAULT_REFRESH_INTER
             <Button
               variant="contained"
               size="small"
-              disabled={primaryRelay === localStorage.getItem('primaryRelay')}
+              disabled={primaryRelay === (localStorage.getItem('primaryRelay') ?? '')}
               onClick={handlePrimaryRelayChange}
               sx={STYLES.primaryRelayButton}
             >
-              APPLY CHANGE
+              UPDATE
             </Button>
           </Box>
         </Grid>
