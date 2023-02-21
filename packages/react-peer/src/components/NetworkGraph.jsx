@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Graph } from 'react-d3-graph';
 import { Box, Popover, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, Typography } from '@mui/material';
+import { getPseudonymForPeerId } from '@cerc-io/peer';
 
 // Graph configuration.
 const graphConfig = {
@@ -138,7 +139,7 @@ function NetworkGraph ({ peer }) {
             <TableBody>
               <TableRow>
                 <TableCell size="small"><b>Peer ID</b></TableCell>
-                <TableCell size="small">{hoveredPeer && hoveredPeer.id}</TableCell>
+                <TableCell size="small">{hoveredPeer && `${hoveredPeer.id} ( ${getPseudonymForPeerId(hoveredPeer.id)} )`}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell size="small"><b>Multiaddr</b></TableCell>
