@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useCallback } from 'react';
-import throttle from 'lodash/throttle'
+import React, { useContext, useEffect } from 'react';
 
 import { Box } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
@@ -8,11 +7,14 @@ import { useForceUpdate } from '../hooks/forceUpdate';
 import { PeerContext } from '../context/PeerContext';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import NetworkGraph from './NetworkGraph';
+import { useThrottledCallback } from '../hooks/throttledCallback';
 
 export function PeerNetwork ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
   const peer = useContext(PeerContext);
   const forceUpdate = useForceUpdate();
-  const throttledForceUpdate = useCallback(throttle(forceUpdate, THROTTLE_WAIT_TIME), [forceUpdate]);
+
+  // Set leading false to render UI after the events have triggered
+  const throttledForceUpdate = useThrottledCallback(forceUpdate, THROTTLE_WAIT_TIME, { leading: false });
 
   useEffect(() => {
     if (!peer || !peer.node) {

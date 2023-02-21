@@ -1,5 +1,4 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import throttle from 'lodash/throttle';
 
 import { getPseudonymForPeerId } from '@cerc-io/peer';
 import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
@@ -7,6 +6,7 @@ import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Ta
 import { useForceUpdate } from '../hooks/forceUpdate';
 import { PeerContext } from '../context/PeerContext';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
+import { useThrottledCallback } from '../hooks/throttledCallback';
 
 const STYLES = {
   selfInfoHead: {
@@ -25,7 +25,8 @@ export function SelfInfo ({ relayNodes, refreshInterval = DEFAULT_REFRESH_INTERV
   const peer = useContext(PeerContext);
   const [primaryRelay, setPrimaryRelay] = useState(localStorage.getItem('primaryRelay') ?? '')
   const forceUpdate = useForceUpdate();
-  const throttledForceUpdate = useCallback(throttle(forceUpdate, THROTTLE_WAIT_TIME), [forceUpdate]);
+
+  const throttledForceUpdate = useThrottledCallback(forceUpdate, THROTTLE_WAIT_TIME);
 
   const handlePrimaryRelayChange = useCallback(() => {
     // Set selected primary relay in localStorage and refresh app
