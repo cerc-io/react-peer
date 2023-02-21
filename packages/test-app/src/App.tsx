@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { PeerContext, Metrics, DebugInfo, PeerNetwork } from '@cerc-io/react-peer'
+import { PeerContext, Metrics, SelfInfo, Connections, PeerNetwork } from '@cerc-io/react-peer'
 
 import { Peer } from '@cerc-io/peer';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -84,13 +84,18 @@ function App() {
         >
           <Card raised>
             <CardContent sx={STYLES.cardContent}>
-              <DebugInfo relayNodes={config.relayNodes ?? []} />
+              <SelfInfo relayNodes={config.relayNodes ?? []} />
             </CardContent>
           </Card>
           <Card sx={{ marginTop: 2 }} raised>
             <CardContent sx={STYLES.cardContent}>
               <Typography><b>Graph</b></Typography>
               <PeerNetwork />
+            </CardContent>
+          </Card>
+          <Card sx={{ marginTop: 2 }} raised>
+            <CardContent sx={STYLES.cardContent}>
+              <Connections />
             </CardContent>
           </Card>
           <Card sx={{ marginTop: 2 }} raised>
