@@ -11,10 +11,20 @@ import './App.css';
 const TEST_TOPIC = 'test';
 
 const STYLES = {
+  container: {
+    bgcolor: 'background.paper',
+    py: 3,
+    px: 3
+  },
   cardContent: {
     padding: 1,
     '&:last-child': {
       padding: 1
+    }
+  },
+  debugCard: {
+    '&:not(:first-of-type)': {
+      marginTop: 2
     }
   }
 }
@@ -76,29 +86,25 @@ function App() {
       </AppBar>
       <main>
         <Box
-          sx={{
-            bgcolor: 'background.paper',
-            py: 3,
-            px: 3
-          }}
+          sx={STYLES.container}
         >
-          <Card raised>
+          <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
               <SelfInfo relayNodes={config.relayNodes ?? []} />
             </CardContent>
           </Card>
-          <Card sx={{ marginTop: 2 }} raised>
+          <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
               <Typography><b>Graph</b></Typography>
               <PeerNetwork />
             </CardContent>
           </Card>
-          <Card sx={{ marginTop: 2 }} raised>
+          <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
               <Connections />
             </CardContent>
           </Card>
-          <Card sx={{ marginTop: 2 }} raised>
+          <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
               <Typography><b>Metrics</b></Typography>
               <Metrics />

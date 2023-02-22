@@ -8,6 +8,15 @@ import { PeerContext } from '../context/PeerContext';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import { useThrottledCallback } from '../hooks/throttledCallback';
 
+const STYLES = {
+  connectionsTable: {
+    marginTop: 1
+  },
+  connectionsTableFirstColumn: {
+    width: 150
+  }
+}
+
 export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
   const peer = useContext(PeerContext);
   const forceUpdate = useForceUpdate();
@@ -17,16 +26,15 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
 
   useEffect(() => {
     if (!peer || !peer.node) {
-      return
+      return;
     }
 
-    // TODO: Use throttling
-    peer.node.addEventListener('peer:connect', throttledForceUpdate)
-    peer.node.addEventListener('peer:disconnect', throttledForceUpdate)
+    peer.node.addEventListener('peer:connect', throttledForceUpdate);
+    peer.node.addEventListener('peer:disconnect', throttledForceUpdate);
 
     return () => {
-      peer.node?.removeEventListener('peer:connect', throttledForceUpdate)
-      peer.node?.removeEventListener('peer:disconnect', throttledForceUpdate)
+      peer.node?.removeEventListener('peer:connect', throttledForceUpdate);
+      peer.node?.removeEventListener('peer:disconnect', throttledForceUpdate);
     }
   }, [peer, throttledForceUpdate])
 
@@ -35,7 +43,7 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
     const intervalID = setInterval(throttledForceUpdate, refreshInterval);
 
     return () => {
-      clearInterval(intervalID)
+      clearInterval(intervalID);
     }
   }, [throttledForceUpdate])
 
@@ -49,11 +57,11 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
         </b>
       </Typography>
       {peer.node.getConnections().map(connection => (
-        <TableContainer sx={{ mt: 1 }} key={connection.id} component={Paper}>
+        <TableContainer sx={STYLES.connectionsTable} key={connection.id} component={Paper}>
           <Table size="small">
             <TableBody>
               <TableRow>
-                <TableCell size="small" sx={{ width: 150 }}><b>Connection ID</b></TableCell>
+                <TableCell size="small" sx={STYLES.connectionsTableFirstColumn}><b>Connection ID</b></TableCell>
                 <TableCell size="small">{connection.id}</TableCell>
                 <TableCell size="small" align="right"><b>Direction</b></TableCell>
                 <TableCell size="small">{connection.stat.direction}</TableCell>
@@ -63,7 +71,7 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
                 <TableCell size="small">{connection.remoteAddr.toString().includes('p2p-circuit/p2p') ? "relayed" : "direct"}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell size="small"><b>Peer ID</b></TableCell>
+                <TableCell size="small" sx={STYLES.connectionsTableFirstColumn}><b>Peer ID</b></TableCell>
                 <TableCell size="small">{`${connection.remotePeer.toString()} ( ${getPseudonymForPeerId(connection.remotePeer.toString())} )`}</TableCell>
                 <TableCell align="right"><b>Node type</b></TableCell>
                 <TableCell>
@@ -86,7 +94,7 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell size="small" sx={{ width: 150 }}><b>Connected multiaddr</b></TableCell>
+                <TableCell size="small" sx={STYLES.connectionsTableFirstColumn}><b>Connected multiaddr</b></TableCell>
                 <TableCell size="small" colSpan={7}>{connection.remoteAddr.toString()}</TableCell>
               </TableRow>
             </TableBody>
