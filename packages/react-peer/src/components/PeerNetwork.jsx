@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 
 import { Box } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
@@ -11,9 +11,9 @@ import { useThrottledCallback } from '../hooks/throttledCallback';
 
 export function PeerNetwork ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
   const peer = useContext(PeerContext);
-  const forceUpdate = useForceUpdate();
-
+  
   // Set leading false to render UI after the events have triggered
+  const forceUpdate = useForceUpdate();
   const throttledForceUpdate = useThrottledCallback(forceUpdate, THROTTLE_WAIT_TIME, { leading: false });
 
   useEffect(() => {
@@ -44,6 +44,7 @@ export function PeerNetwork ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
       <Box mt={1} {...props}>
         { peer && (
           <NetworkGraph
+            connections={[...peer.node.getConnections()]}
             peer={peer}
           />
         )}
