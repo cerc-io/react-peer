@@ -1,3 +1,4 @@
 {
-  "relayNodes": []
+  "relayNodes": [],
+  "enableDebugInfo": true
 }

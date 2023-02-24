@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { PeerContext, Metrics, SelfInfo, Connections, PeerNetwork } from '@cerc-io/react-peer'
 
-import { Peer } from '@cerc-io/peer';
+import { Peer, DebugMsg } from '@cerc-io/peer';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AppBar, Box, Card, CardContent, CssBaseline, Toolbar, Typography } from '@mui/material';
 
@@ -33,6 +33,7 @@ declare global {
   interface Window {
     broadcast: (message: string) => void;
     flood: (message: string) => Promise<void>;
+    requestPeerInfo: () => Promise<void>;
     peer: Peer;
   }
 }
@@ -68,9 +69,29 @@ function App() {
       return peer.floodMessage(TEST_TOPIC, message)
     }
 
+    let unsubscribeDebugInfo: (() => void) | undefined
+    if (config.enableDebugInfo) {
+      unsubscribeDebugInfo = peer.subscribeDebugInfo((peerId, msg) => {
+        const debugMsg = msg as DebugMsg;
+        const msgType = debugMsg.type;
+
+        if (msgType === 'Response' && debugMsg.dst === peer.peerId?.toString()) {
+          console.log(`Peer info for peer ${peerId.toString()} >`, JSON.stringify(debugMsg.peerInfo, null, 2));
+        }
+      })
+
+      window.requestPeerInfo = async () => {
+        return peer.requestPeerInfo()
+      }
+    }
+
     return () => {
       unsubscribeMessage()
       unsubscribeTopic()
+
+      if (unsubscribeDebugInfo) {
+        unsubscribeDebugInfo()
+      }
     }
   }, [peer])
 
