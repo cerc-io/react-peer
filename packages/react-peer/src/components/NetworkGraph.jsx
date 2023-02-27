@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Graph } from 'react-d3-graph';
 import { Box, Popover, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 import { getPseudonymForPeerId } from '@cerc-io/peer';
+import ForceDirectedGraph from './ForceDirectedGraph';
 
 // Graph configuration.
 const GRAPH_CONFIG = {
@@ -43,6 +43,9 @@ const GRAPH_CONFIG = {
   height: (window.innerHeight / 2) - 80,
   width: window.innerWidth - 64
 };
+
+// TODO: Change height on changing browser window size
+const CONTAINER_HEIGHT = (window.innerHeight / 2) - 80
 
 function NetworkGraph ({ peer, connections }) {
   const links = [];
@@ -127,13 +130,10 @@ function NetworkGraph ({ peer, connections }) {
 
   return (
     <Box>
-      <Graph
-        key={graphKey}
-        id="network-graph"
-        data={data}
-        config={GRAPH_CONFIG}
-        onMouseOverNode={onMouseOverNode}
-        onMouseOutNode={() => setAnchorEl(null)}
+      <ForceDirectedGraph
+        nodes={data.nodes}
+        links={data.links}
+        containerHeight={CONTAINER_HEIGHT}
       />
       <Popover
         id="mouse-over-popover"
