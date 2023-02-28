@@ -11,24 +11,6 @@ function NetworkGraph ({ peer, connections }) {
   const relayMultiaddr = peer.relayNodeMultiaddr
   const [anchorEl, setAnchorEl] = useState(null)
   const [hoveredPeer, setHoveredPeer] = useState(null)
-  const [prevConnections, setPrevConnections] = useState(connections.map(connection => connection.id))
-  const [graphKey, setGraphKey] = useState('')
-
-  // Issue with links in graph not getting removed after disconnect
-  // Workaround to re render graph after disconnects between peers
-  useEffect(() => {
-    const connectionIds = connections.map(connection => connection.id)
-    // Compare connections and check if any previous connection missing
-    const isConnectionMissing = prevConnections.some(connectionId => !connectionIds.includes(connectionId));
-    
-    if (isConnectionMissing) {
-      setGraphKey(JSON.stringify(connectionIds));
-    }
-
-    return () => {
-      setPrevConnections(connections.map(connection => connection.id))
-    }
-  }, [connections])
 
   const remotePeerNodes = connections.map(connection => {
     const connectionMultiAddr = connection.remoteAddr
@@ -98,8 +80,7 @@ function NetworkGraph ({ peer, connections }) {
   return (
     <Box>
       <ForceDirectedGraph
-        nodes={data.nodes}
-        links={data.links}
+        data={data}
         containerHeight={CONTAINER_HEIGHT}
       />
       <Popover

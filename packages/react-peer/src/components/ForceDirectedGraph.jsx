@@ -1,7 +1,7 @@
 import React, { useRef, useCallback, useEffect, useState } from "react"
 import * as d3 from "d3";
 
-function ForceDirectedGraph ({ nodes, links, onClickNode, containerHeight }) {
+function ForceDirectedGraph ({ data, onClickNode, containerHeight }) {
   const containerRef = useRef(null)
   const [containerWidth, setContainerWidth] = useState(0)
 
@@ -18,7 +18,9 @@ function ForceDirectedGraph ({ nodes, links, onClickNode, containerHeight }) {
         const circle = enter.append("circle")
 
         circle.append("title")
-          .text(d => `Peer ID: ${d.id} (${d.pseudonym}) \n\nMultiaddr: ${d.multiaddr}`);
+          .text(d => {
+            return `Peer ID: ${d.id} (${d.pseudonym}) \n\nMultiaddr: ${d.multiaddr}`
+          });
 
         return circle
       })
@@ -71,8 +73,8 @@ function ForceDirectedGraph ({ nodes, links, onClickNode, containerHeight }) {
   }, [containerWidth, containerHeight])
 
   useEffect(() => {
-    update({ nodes, links })
-  }, [nodes, links, update])
+    update(data)
+  }, [data, update])
 
   return (
     <div ref={measuredRef}>
