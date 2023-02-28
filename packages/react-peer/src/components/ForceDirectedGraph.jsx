@@ -15,28 +15,27 @@ function ForceDirectedGraph ({ nodes, links, onClickNode, containerHeight }) {
     node = node
       .data(nodes)
       .join(enter => {
-        const nodeGroup = enter.append("g");
-
-        const circle = nodeGroup.append("circle")
-          .attr("r", d => d.size ?? 12)
-          .attr("fill", d => color(d.colorIndex))
-          .attr("stroke-width", d => d.selected ? 2 : 0)
-          .attr("stroke", d => d.selected ? color(3) : '#FFF');
+        const circle = enter.append("circle")
 
         circle.append("title")
-          .text(d => `Peer ID: ${d.id} (${d.pseudonym}) \nMultiaddr: ${d.multiaddr}`);
-        
-        nodeGroup.append("text")
-          .attr("dx", d => (d.size ?? 12) + 2)
-          .attr("dy", ".35em")
-          .attr("font-size", 14)
-          .text(function(d) { return d.label });
+          .text(d => `Peer ID: ${d.id} (${d.pseudonym}) \n\nMultiaddr: ${d.multiaddr}`);
 
-        return nodeGroup
+        return circle
       })
+      .attr("r", d => d.size ?? 12)
+      .attr("fill", d => color(d.colorIndex))
+      .attr("stroke-width", d => d.selected ? 2 : 0)
+      .attr("stroke", d => d.selected ? color(3) : '#FFF')
       .on('click', onClickNode)
-      .attr('class', 'node')
       .call(drag(simulation));
+
+    label = label
+      .data(nodes)
+      .join("text")
+      .attr("dx", d => (d.size ?? 12) + 2)
+      .attr("dy",".35em")
+      .attr("font-size", 14)
+      .text(d => d.label);
 
     link = link
       .data(links)
@@ -50,6 +49,7 @@ function ForceDirectedGraph ({ nodes, links, onClickNode, containerHeight }) {
     const transform = d3.zoomTransform(svg.node())
     link.attr("transform", transform);
     node.attr("transform", transform);
+    label.attr("transform", transform);
   }, [ onClickNode ])
 
   const measuredRef = useCallback(node => {
@@ -92,7 +92,7 @@ const simulation = d3.forceSimulation()
       .distance(150) // Minimum distance between nodes
       .id(d => d.id)
   )
-  .force("charge", d3.forceManyBody())
+  .force("charge", d3.forceManyBody().strength(-150))
 
 const drag = simulation => {
   function dragstarted(d) {
@@ -124,8 +124,7 @@ const zoom = d3.zoom()
   .scaleExtent([1/8, 8])
   .on("zoom", zoomed);
 
-// TODO: Fix issue with nodes not placed properly on zoom
-// svg.call(zoom);
+svg.call(zoom);
 
 // SVG for arrowheads
 // svg.append('defs')
@@ -152,7 +151,11 @@ let link = svg.append("g")
 
 // SVG for nodes
 let node = svg.append("g")
-  .selectAll(".node")
+  .selectAll("circle")
+
+// SVG for labels
+let label = svg.append("g")
+  .selectAll("text")
 
 simulation.on("tick", () => {
   link
@@ -162,10 +165,16 @@ simulation.on("tick", () => {
     .attr("y2", d => d.target.y);
 
   node
-    .attr("transform", d => `translate(${d.x}, ${d.y})`);
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y);
+
+  label
+    .attr("x", d => d.x)
+    .attr("y", d => d.y);
 });
 
 function zoomed() {
   link.attr("transform", d3.event.transform);
   node.attr("transform", d3.event.transform);
+  label.attr("transform", d3.event.transform);
 }
