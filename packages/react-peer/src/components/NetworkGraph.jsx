@@ -3,47 +3,6 @@ import { Box, Popover, Table, TableBody, TableCell, TableContainer, TableRow, Ty
 import { getPseudonymForPeerId } from '@cerc-io/peer';
 import ForceDirectedGraph from './ForceDirectedGraph';
 
-// Graph configuration.
-const GRAPH_CONFIG = {
-  nodeHighlightBehavior: true,
-  node: {
-      color: 'blue',
-      size: 1000,
-      fontSize: 14,
-      labelProperty: ({ id, color }) => {
-        switch (color) {
-          case 'red':
-            return 'Self';
-        
-          case 'green':
-            return 'Relay (primary)';
-    
-          case 'blue':
-            return 'Peer';
-          
-          case 'yellow':
-            return 'Relay (secondary)';
-    
-          default:
-            return id;
-        }
-      }
-  },
-  link: {
-    color: 'grey'
-  },
-  directed: false,
-  collapsible: false,
-  d3: {
-    gravity: -1000
-  },
-  // https://github.com/danielcaldas/react-d3-graph/issues/23#issuecomment-338308398
-  // height: 'calc(50vh - 16px - 32px - 32px)',
-  // width: '100%'
-  height: (window.innerHeight / 2) - 80,
-  width: window.innerWidth - 64
-};
-
 // TODO: Change height on changing browser window size
 const CONTAINER_HEIGHT = (window.innerHeight / 2) - 80
 
@@ -76,17 +35,21 @@ function NetworkGraph ({ peer, connections }) {
     
     const nodeData = {
       id: connection.remotePeer.toString(),
+      pseudonym: getPseudonymForPeerId(connection.remotePeer.toString()),
       multiaddr: connectionMultiAddr.toString(),
-      color: 'blue'
+      colorIndex: 0,
+      label: 'Peer'
     }
     
     if (peer.isRelayPeerMultiaddr(connectionMultiAddr.toString())) {
       links.push({ source: peer.peerId.toString(), target: connection.remotePeer.toString() })
       
-      nodeData.color = 'yellow';
+      nodeData.colorIndex = 8;
+      nodeData.label = 'Relay (secondary)'
 
       if (connectionMultiAddr.equals(relayMultiaddr)) {
-        nodeData.color = 'green';
+        nodeData.colorIndex = 2;
+        nodeData.label = 'Relay (primary)'
       }
     } else {
       // If relayed connection
@@ -121,7 +84,11 @@ function NetworkGraph ({ peer, connections }) {
     nodes: [
       {
         id: peer.peerId.toString(),
-        color: 'red'
+        pseudonym: getPseudonymForPeerId(peer.peerId.toString()),
+        size: 14,
+        colorIndex: 3,
+        label: 'Self',
+        multiaddr: peer.node.getMultiaddrs().map(multiaddr => multiaddr.toString()).join(', ')
       },
       ...remotePeerNodes
     ],

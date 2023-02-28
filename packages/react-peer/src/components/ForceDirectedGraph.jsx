@@ -1,9 +1,7 @@
 import React, { useRef, useCallback, useEffect, useState } from "react"
 import * as d3 from "d3";
 
-import { LinearProgress } from "@mui/material";
-
-function ForceDirectedGraph ({ nodes, links, onClickNode, isLoading, containerHeight }) {
+function ForceDirectedGraph ({ nodes, links, onClickNode, containerHeight }) {
   const containerRef = useRef(null)
   const [containerWidth, setContainerWidth] = useState(0)
 
@@ -17,16 +15,27 @@ function ForceDirectedGraph ({ nodes, links, onClickNode, isLoading, containerHe
     node = node
       .data(nodes)
       .join(enter => {
-        const circle = enter.append("circle")
-          .attr("r", d => d.isRoot ? 12 : 8)
+        const nodeGroup = enter.append("g");
+
+        const circle = nodeGroup.append("circle")
+          .attr("r", d => d.size ?? 12)
+          .attr("fill", d => color(d.colorIndex))
+          .attr("stroke-width", d => d.selected ? 2 : 0)
+          .attr("stroke", d => d.selected ? color(3) : '#FFF');
 
         circle.append("title")
-          .text(d => d.id);
-        return circle
+          .text(d => `Peer ID: ${d.id} (${d.pseudonym}) \nMultiaddr: ${d.multiaddr}`);
+        
+        nodeGroup.append("text")
+          .attr("dx", d => (d.size ?? 12) + 2)
+          .attr("dy", ".35em")
+          .attr("font-size", 14)
+          .text(function(d) { return d.label });
+
+        return nodeGroup
       })
-      .attr("fill", d => color(Boolean(d.isRoot)))
-      .attr("stroke", d => d.selected ? color(3) : '#FFF')
       .on('click', onClickNode)
+      .attr('class', 'node')
       .call(drag(simulation));
 
     link = link
@@ -67,8 +76,6 @@ function ForceDirectedGraph ({ nodes, links, onClickNode, isLoading, containerHe
 
   return (
     <div ref={measuredRef}>
-      {/* <LinearProgress style={{ visibility: isLoading ? 'visible' : 'hidden' }}/> */}
-
       <div ref={containerRef} />
     </div>
   )
@@ -76,11 +83,15 @@ function ForceDirectedGraph ({ nodes, links, onClickNode, isLoading, containerHe
 
 export default ForceDirectedGraph
 
-const scale = d3.scaleOrdinal(d3.schemeCategory10);
-const color = n => scale(n)
+const color = n => d3.schemeCategory10[n]
 
 const simulation = d3.forceSimulation()
-  .force("link", d3.forceLink().id(d => d.id))
+  .force(
+    "link",
+    d3.forceLink()
+      .distance(150) // Minimum distance between nodes
+      .id(d => d.id)
+  )
   .force("charge", d3.forceManyBody())
 
 const drag = simulation => {
@@ -113,32 +124,35 @@ const zoom = d3.zoom()
   .scaleExtent([1/8, 8])
   .on("zoom", zoomed);
 
-svg.call(zoom);
+// TODO: Fix issue with nodes not placed properly on zoom
+// svg.call(zoom);
 
-svg.append('defs')
-  .append('marker')
-  .attr("id",'arrowhead')
-  .attr('viewBox','-0 -5 10 10') //the bound of the SVG viewport for the current SVG fragment. defines a coordinate system 10 wide and 10 high starting on (0,-5)
-  .attr('refX',26.5) // x coordinate for the reference point of the marker. If circle is bigger, this need to be bigger.
-  .attr('refY',0)
-  .attr('orient','auto')
-  .attr('markerWidth',5)
-  .attr('markerHeight',5)
-  .attr('xoverflow','visible')
-  .append('svg:path')
-  .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-  .attr('fill', '#999')
-  .style('stroke','none');
+// SVG for arrowheads
+// svg.append('defs')
+//   .append('marker')
+//   .attr("id",'arrowhead')
+//   .attr('viewBox','-0 -5 10 10') //the bound of the SVG viewport for the current SVG fragment. defines a coordinate system 10 wide and 10 high starting on (0,-5)
+//   .attr('refX',26.5) // x coordinate for the reference point of the marker. If circle is bigger, this need to be bigger.
+//   .attr('refY',0)
+//   .attr('orient','auto')
+//   .attr('markerWidth',5)
+//   .attr('markerHeight',5)
+//   .attr('xoverflow','visible')
+//   .append('svg:path')
+//   .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+//   .attr('fill', '#999')
+//   .style('stroke','none');
 
+// SVG for links
 let link = svg.append("g")
-  .attr("stroke", "#999")
+  .attr("stroke", "grey")
   .attr("stroke-opacity", 0.6)
   .attr("stroke-WIDTH", 1)
   .selectAll("line");
 
+// SVG for nodes
 let node = svg.append("g")
-  .attr("stroke-width", 2)
-  .selectAll("circle")
+  .selectAll(".node")
 
 simulation.on("tick", () => {
   link
@@ -148,13 +162,10 @@ simulation.on("tick", () => {
     .attr("y2", d => d.target.y);
 
   node
-    .attr("cx", d => d.x)
-    .attr("cy", d => d.y);
+    .attr("transform", d => `translate(${d.x}, ${d.y})`);
 });
 
 function zoomed() {
   link.attr("transform", d3.event.transform);
   node.attr("transform", d3.event.transform);
 }
-
-// invalidation.then(() => simulation.stop());
