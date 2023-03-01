@@ -1,5 +1,11 @@
 import React, { useContext, useEffect } from 'react';
-import { PeerContext, Metrics, SelfInfo, Connections, PeerNetwork } from '@cerc-io/react-peer'
+import {
+  PeerContext,
+  Metrics,
+  SelfInfo,
+  Connections,
+  PeersGraph
+} from '@cerc-io/react-peer'
 
 import { Peer } from '@cerc-io/peer';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -95,8 +101,14 @@ function App() {
           </Card>
           <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
-              <Typography><b>Graph</b></Typography>
-              <PeerNetwork />
+              <Typography><b>Network Graph</b></Typography>
+              <NetworkGraph />
+            </CardContent>
+          </Card>
+          <Card sx={STYLES.debugCard} raised>
+            <CardContent sx={STYLES.cardContent}>
+              <Typography><b>Peers Graph</b></Typography>
+              <PeersGraph />
             </CardContent>
           </Card>
           <Card sx={STYLES.debugCard} raised>

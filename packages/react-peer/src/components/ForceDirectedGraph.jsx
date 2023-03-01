@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect, useState } from "react"
+import React, { useRef, useCallback, useEffect, useState, useMemo } from "react"
 import * as d3 from "d3";
 
 function ForceDirectedGraph ({
@@ -11,14 +11,34 @@ function ForceDirectedGraph ({
   const containerRef = useRef(null)
   const [containerWidth, setContainerWidth] = useState(0)
 
+  const svgRef = useRef(d3.create("svg"));
+  const linkRef = useRef(null);
+  const nodeRef = useRef(null);
+  const labelRef = useRef(null);
+
+  const zoom = useMemo(() => {
+    const zoomed = () => {
+      linkRef.current.attr("transform", d3.event.transform);
+      nodeRef.current.attr("transform", d3.event.transform);
+      labelRef.current.attr("transform", d3.event.transform);
+    };
+
+    return d3.zoom()
+      .scaleExtent([1/8, 8])
+      .on(
+        "zoom",
+        zoomed
+      )
+  }, []);
+
   const update = useCallback(({ nodes, links }) => {
     // Make a shallow copy to protect against mutation, while
     // recycling old nodes to preserve position and velocity.
-    const old = new Map(node.data().map(d => [d.id, d]));
+    const old = new Map(nodeRef.current.data().map(d => [d.id, d]));
     nodes = nodes.map(d => Object.assign(old.get(d.id) || {}, d));
     links = links.map(d => Object.assign({}, d));
 
-    node = node
+    nodeRef.current = nodeRef.current
       .data(nodes)
       .join("circle")
       .attr("id", d => d.id)
@@ -31,7 +51,7 @@ function ForceDirectedGraph ({
       .on('mouseout', onMouseOutNode)
       .call(drag(simulation));
 
-    label = label
+    labelRef.current = labelRef.current
       .data(nodes)
       .join("text")
       .attr("dx", d => (d.size ?? 12) + 2)
@@ -39,7 +59,7 @@ function ForceDirectedGraph ({
       .attr("font-size", 14)
       .text(d => d.label);
 
-    link = link
+    linkRef.current = linkRef.current
       .data(links)
       .join("line")
       // .attr('marker-end','url(#arrowhead)');
@@ -48,11 +68,11 @@ function ForceDirectedGraph ({
     simulation.force("link").links(links);
     simulation.alpha(1).restart();
 
-    const transform = d3.zoomTransform(svg.node())
-    link.attr("transform", transform);
-    node.attr("transform", transform);
-    label.attr("transform", transform);
-  }, [ onClickNode ])
+    const transform = d3.zoomTransform(svgRef.current.node())
+    linkRef.current.attr("transform", transform);
+    nodeRef.current.attr("transform", transform);
+    labelRef.current.attr("transform", transform);
+  }, [onClickNode])
 
   const measuredRef = useCallback(node => {
     if (node !== null) {
@@ -60,17 +80,62 @@ function ForceDirectedGraph ({
     }
   }, []);
 
-  useEffect(() => containerRef.current.append(svg.node()), [])
+  useEffect(() => {
+    // Set d3 SVG group references on mount
+    // SVG group for links
+    linkRef.current = svgRef.current.append("g")
+      .attr("stroke", "grey")
+      .attr("stroke-opacity", 0.6)
+      .attr("stroke-width", 1)
+      .selectAll("line");
+    // SVG group for nodes
+    nodeRef.current = svgRef.current.append("g")
+      .selectAll("circle");
+    // SVG group for labels
+    labelRef.current = svgRef.current.append("g")
+      .selectAll("text");
+
+    // Method for setting positions of SVG elements
+    const onTick = () => {
+      linkRef.current
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+    
+      nodeRef.current
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+    
+      labelRef.current
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
+    }
+
+    // Existing listener is replaced on registering new one
+    simulation.on("tick", onTick);
+
+    // Append the d3 root element to container div 
+    containerRef.current.append(svgRef.current.node());
+  }, []);
+
+  useEffect(() => {
+    svgRef.current.call(zoom);
+  }, [zoom])
 
   useEffect(() => {
     if (!containerWidth) {
       return
     }
 
-    svg.attr("viewBox", [0, 0, containerWidth, containerHeight])
+    svgRef.current.attr("viewBox", [0, 0, containerWidth, containerHeight])
     simulation.force("center", d3.forceCenter(containerWidth / 2, containerHeight / 2));
     zoom.extent([[0, 0], [containerWidth, containerHeight]])
-  }, [containerWidth, containerHeight])
+  }, [
+    containerWidth,
+    containerHeight,
+    zoom
+  ])
 
   useEffect(() => {
     update(data)
@@ -120,14 +185,6 @@ const drag = simulation => {
       .on("end", dragended);
 }
 
-const svg = d3.create("svg")
-
-const zoom = d3.zoom()
-  .scaleExtent([1/8, 8])
-  .on("zoom", zoomed);
-
-svg.call(zoom);
-
 // SVG for arrowheads
 // svg.append('defs')
 //   .append('marker')
@@ -143,40 +200,3 @@ svg.call(zoom);
 //   .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
 //   .attr('fill', '#999')
 //   .style('stroke','none');
-
-// SVG for links
-let link = svg.append("g")
-  .attr("stroke", "grey")
-  .attr("stroke-opacity", 0.6)
-  .attr("stroke-WIDTH", 1)
-  .selectAll("line");
-
-// SVG for nodes
-let node = svg.append("g")
-  .selectAll("circle")
-
-// SVG for labels
-let label = svg.append("g")
-  .selectAll("text")
-
-simulation.on("tick", () => {
-  link
-    .attr("x1", d => d.source.x)
-    .attr("y1", d => d.source.y)
-    .attr("x2", d => d.target.x)
-    .attr("y2", d => d.target.y);
-
-  node
-    .attr("cx", d => d.x)
-    .attr("cy", d => d.y);
-
-  label
-    .attr("x", d => d.x)
-    .attr("y", d => d.y);
-});
-
-function zoomed() {
-  link.attr("transform", d3.event.transform);
-  node.attr("transform", d3.event.transform);
-  label.attr("transform", d3.event.transform);
-}
