@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Box, Popover, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 import { getPseudonymForPeerId } from '@cerc-io/peer';
 import ForceDirectedGraph from './ForceDirectedGraph';
@@ -12,47 +12,59 @@ function NetworkGraph ({ peer, connections }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const [hoveredPeer, setHoveredPeer] = useState(null)
 
-  const remotePeerNodes = connections.map(connection => {
-    const connectionMultiAddr = connection.remoteAddr
-    
-    const nodeData = {
-      id: connection.remotePeer.toString(),
-      pseudonym: getPseudonymForPeerId(connection.remotePeer.toString()),
-      multiaddr: connectionMultiAddr.toString(),
-      colorIndex: 0,
-      label: 'Peer'
-    }
-    
-    if (peer.isRelayPeerMultiaddr(connectionMultiAddr.toString())) {
-      links.push({ source: peer.peerId.toString(), target: connection.remotePeer.toString() })
+  const data = useMemo(() => {
+    const remotePeerNodes = connections.map(connection => {
+      const connectionMultiAddr = connection.remoteAddr
       
-      nodeData.colorIndex = 8;
-      nodeData.label = 'Relay (secondary)'
-
-      if (connectionMultiAddr.equals(relayMultiaddr)) {
-        nodeData.colorIndex = 2;
-        nodeData.label = 'Relay (primary)'
+      const nodeData = {
+        id: connection.remotePeer.toString(),
+        pseudonym: getPseudonymForPeerId(connection.remotePeer.toString()),
+        multiaddrs: [connectionMultiAddr.toString()],
+        colorIndex: 0,
+        label: 'Peer'
       }
-    } else {
-      // If relayed connection
-      if (connectionMultiAddr.protoNames().includes('p2p-circuit')) {
-        const relayPeerId = connectionMultiAddr.decapsulate('p2p-circuit/p2p').getPeerId();
-        links.push({ source: relayPeerId.toString(), target: connection.remotePeer.toString() });
-      } else {
-        links.push({ source: peer.peerId.toString(), target: connection.remotePeer.toString() });
-      }
-    }
+      
+      if (peer.isRelayPeerMultiaddr(connectionMultiAddr.toString())) {
+        links.push({ source: peer.peerId.toString(), target: connection.remotePeer.toString() })
+        
+        nodeData.colorIndex = 8;
+        nodeData.label = 'Relay (secondary)'
   
-    return nodeData;
-  })
+        if (connectionMultiAddr.equals(relayMultiaddr)) {
+          nodeData.colorIndex = 2;
+          nodeData.label = 'Relay (primary)'
+        }
+      } else {
+        // If relayed connection
+        if (connectionMultiAddr.protoNames().includes('p2p-circuit')) {
+          const relayPeerId = connectionMultiAddr.decapsulate('p2p-circuit/p2p').getPeerId();
+          links.push({ source: relayPeerId.toString(), target: connection.remotePeer.toString() });
+        } else {
+          links.push({ source: peer.peerId.toString(), target: connection.remotePeer.toString() });
+        }
+      }
+    
+      return nodeData;
+    })
 
-  const onMouseOverNode = useCallback((nodeId) => {
-    let multiaddrs = peer.node.getMultiaddrs().map(multiaddr => multiaddr.toString());
+    return {
+      nodes: [
+        {
+          id: peer.peerId.toString(),
+          pseudonym: getPseudonymForPeerId(peer.peerId.toString()),
+          size: 14,
+          colorIndex: 3,
+          label: 'Self',
+          multiaddrs: peer.node.getMultiaddrs().map(multiaddr => multiaddr.toString())
+        },
+        ...remotePeerNodes
+      ],
+      links
+    };
+  }, [peer, connections]);
 
-    if (nodeId !== peer.peerId.toString()) {
-      const remotePeerNode = remotePeerNodes.find(remotePeerNode => remotePeerNode.id === nodeId);
-      multiaddrs = [remotePeerNode.multiaddr];
-    }
+  const onMouseOverNode = useCallback((data) => {
+    const { id: nodeId, multiaddrs } = data;
 
     setHoveredPeer({
       id: nodeId,
@@ -60,28 +72,15 @@ function NetworkGraph ({ peer, connections }) {
     });
 
     setAnchorEl(document.getElementById(nodeId));
-  }, [peer, remotePeerNodes])
-
-  const data = {
-    nodes: [
-      {
-        id: peer.peerId.toString(),
-        pseudonym: getPseudonymForPeerId(peer.peerId.toString()),
-        size: 14,
-        colorIndex: 3,
-        label: 'Self',
-        multiaddr: peer.node.getMultiaddrs().map(multiaddr => multiaddr.toString()).join(', ')
-      },
-      ...remotePeerNodes
-    ],
-    links
-  };
+  }, []);
 
   return (
     <Box>
       <ForceDirectedGraph
         data={data}
         containerHeight={CONTAINER_HEIGHT}
+        onMouseOverNode={onMouseOverNode}
+        onMouseOutNode={() => setAnchorEl(null)}
       />
       <Popover
         id="mouse-over-popover"

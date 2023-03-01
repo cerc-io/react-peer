@@ -1,7 +1,13 @@
 import React, { useRef, useCallback, useEffect, useState } from "react"
 import * as d3 from "d3";
 
-function ForceDirectedGraph ({ data, onClickNode, containerHeight }) {
+function ForceDirectedGraph ({
+  data,
+  containerHeight,
+  onClickNode,
+  onMouseOverNode,
+  onMouseOutNode
+}) {
   const containerRef = useRef(null)
   const [containerWidth, setContainerWidth] = useState(0)
 
@@ -14,21 +20,15 @@ function ForceDirectedGraph ({ data, onClickNode, containerHeight }) {
 
     node = node
       .data(nodes)
-      .join(enter => {
-        const circle = enter.append("circle")
-
-        circle.append("title")
-          .text(d => {
-            return `Peer ID: ${d.id} (${d.pseudonym}) \n\nMultiaddr: ${d.multiaddr}`
-          });
-
-        return circle
-      })
+      .join("circle")
+      .attr("id", d => d.id)
       .attr("r", d => d.size ?? 12)
       .attr("fill", d => color(d.colorIndex))
       .attr("stroke-width", d => d.selected ? 2 : 0)
       .attr("stroke", d => d.selected ? color(3) : '#FFF')
       .on('click', onClickNode)
+      .on('mouseover', onMouseOverNode)
+      .on('mouseout', onMouseOutNode)
       .call(drag(simulation));
 
     label = label

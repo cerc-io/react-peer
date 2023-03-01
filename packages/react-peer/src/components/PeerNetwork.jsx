@@ -50,6 +50,9 @@ export function PeerNetwork ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
     // TODO: Add event for connection close and remove refresh in interval
     const intervalID = setInterval(throttledUpdateConnections, refreshInterval);
 
+    // Update connections immediately on first render
+    throttledUpdateConnections();
+
     return () => {
       clearInterval(intervalID)
     }
