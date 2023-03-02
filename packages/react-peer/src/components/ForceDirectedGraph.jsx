@@ -11,6 +11,16 @@ function ForceDirectedGraph ({
   const containerRef = useRef(null)
   const [containerWidth, setContainerWidth] = useState(0)
 
+  const { current: simulation } = useRef(d3.forceSimulation()
+    .force(
+      "link",
+      d3.forceLink()
+        .distance(150) // Minimum distance between nodes
+        .id(d => d.id)
+    )
+    .force("charge", d3.forceManyBody().strength(-150))
+  )
+
   const svgRef = useRef(d3.create("svg"));
   const linkRef = useRef(null);
   const nodeRef = useRef(null);
@@ -41,7 +51,6 @@ function ForceDirectedGraph ({
     nodeRef.current = nodeRef.current
       .data(nodes)
       .join("circle")
-      .attr("id", d => d.id)
       .attr("r", d => d.size ?? 12)
       .attr("fill", d => color(d.colorIndex))
       .attr("stroke-width", d => d.selected ? 2 : 0)
@@ -151,15 +160,6 @@ function ForceDirectedGraph ({
 export default ForceDirectedGraph
 
 const color = n => d3.schemeCategory10[n]
-
-const simulation = d3.forceSimulation()
-  .force(
-    "link",
-    d3.forceLink()
-      .distance(150) // Minimum distance between nodes
-      .id(d => d.id)
-  )
-  .force("charge", d3.forceManyBody().strength(-150))
 
 const drag = simulation => {
   function dragstarted(d) {

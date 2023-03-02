@@ -4,6 +4,7 @@ import {
   Metrics,
   SelfInfo,
   Connections,
+  NetworkGraph,
   PeersGraph
 } from '@cerc-io/react-peer'
 
@@ -101,12 +102,6 @@ function App() {
           </Card>
           <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
-              <Typography><b>Network Graph</b></Typography>
-              <NetworkGraph />
-            </CardContent>
-          </Card>
-          <Card sx={STYLES.debugCard} raised>
-            <CardContent sx={STYLES.cardContent}>
               <Typography><b>Peers Graph</b></Typography>
               <PeersGraph />
             </CardContent>
@@ -120,6 +115,12 @@ function App() {
             <CardContent sx={STYLES.cardContent}>
               <Typography><b>Metrics</b></Typography>
               <Metrics />
+            </CardContent>
+          </Card>
+          <Card sx={STYLES.debugCard} raised>
+            <CardContent sx={STYLES.cardContent}>
+              <Typography><b>Network Graph</b></Typography>
+              <NetworkGraph />
             </CardContent>
           </Card>
         </Box>

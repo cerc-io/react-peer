@@ -1,124 +1,164 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Box, Popover, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
+import React, { useState, useCallback, useContext, useEffect, useMemo } from 'react';
+
+import { Box, Button } from '@mui/material';
+import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { getPseudonymForPeerId } from '@cerc-io/peer';
-import ForceDirectedGraph from './ForceDirectedGraph';
 
-// TODO: Change height on changing browser window size
-const CONTAINER_HEIGHT = (window.innerHeight / 2) - 80
+import { PeerContext } from '../context/PeerContext';
+import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
+import GraphWithTooltip from './GraphWithTooltip';
+import { useThrottledCallback } from '../hooks/throttledCallback';
 
-function NetworkGraph ({ peer, connections }) {
-  const links = [];
-  const relayMultiaddr = peer.relayNodeMultiaddr
-  const [anchorEl, setAnchorEl] = useState(null)
-  const [hoveredPeer, setHoveredPeer] = useState(null)
-
-  const data = useMemo(() => {
-    const remotePeerNodes = connections.map(connection => {
-      const connectionMultiAddr = connection.remoteAddr
-      
-      const nodeData = {
-        id: connection.remotePeer.toString(),
-        pseudonym: getPseudonymForPeerId(connection.remotePeer.toString()),
-        multiaddrs: [connectionMultiAddr.toString()],
-        colorIndex: 0,
-        label: 'Peer'
-      }
-      
-      if (peer.isRelayPeerMultiaddr(connectionMultiAddr.toString())) {
-        links.push({ source: peer.peerId.toString(), target: connection.remotePeer.toString() })
-        
-        nodeData.colorIndex = 8;
-        nodeData.label = 'Relay (secondary)'
-  
-        if (connectionMultiAddr.equals(relayMultiaddr)) {
-          nodeData.colorIndex = 2;
-          nodeData.label = 'Relay (primary)'
-        }
-      } else {
-        // If relayed connection
-        if (connectionMultiAddr.protoNames().includes('p2p-circuit')) {
-          const relayPeerId = connectionMultiAddr.decapsulate('p2p-circuit/p2p').getPeerId();
-          links.push({ source: relayPeerId.toString(), target: connection.remotePeer.toString() });
-        } else {
-          links.push({ source: peer.peerId.toString(), target: connection.remotePeer.toString() });
-        }
-      }
-    
-      return nodeData;
-    })
-
-    return {
-      nodes: [
-        {
-          id: peer.peerId.toString(),
-          pseudonym: getPseudonymForPeerId(peer.peerId.toString()),
-          size: 14,
-          colorIndex: 3,
-          label: 'Self',
-          multiaddrs: peer.node.getMultiaddrs().map(multiaddr => multiaddr.toString())
-        },
-        ...remotePeerNodes
-      ],
-      links
-    };
-  }, [peer, connections]);
-
-  const onMouseOverNode = useCallback((data) => {
-    const { id: nodeId, multiaddrs } = data;
-
-    setHoveredPeer({
-      id: nodeId,
-      multiaddrs
-    });
-
-    setAnchorEl(document.getElementById(nodeId));
-  }, []);
-
-  return (
-    <Box>
-      <ForceDirectedGraph
-        data={data}
-        containerHeight={CONTAINER_HEIGHT}
-        onMouseOverNode={onMouseOverNode}
-        onMouseOutNode={() => setAnchorEl(null)}
-      />
-      <Popover
-        id="mouse-over-popover"
-        sx={{
-          pointerEvents: 'none',
-        }}
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
-        disableRestoreFocus
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-      >
-        <TableContainer>
-          <Table size="small">
-            <TableBody>
-              <TableRow>
-                <TableCell size="small"><b>Peer ID</b></TableCell>
-                <TableCell size="small">{hoveredPeer && `${hoveredPeer.id} ( ${getPseudonymForPeerId(hoveredPeer.id)} )`}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell size="small"><b>Multiaddr</b></TableCell>
-                <TableCell size="small">
-                  {hoveredPeer && hoveredPeer.multiaddrs.map(multiaddr => (<Typography key={multiaddr} variant="body2">{multiaddr}</Typography>))}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Popover>
-    </Box>
-  )
+const STYLES = {
+  container: {
+    position: 'relative'
+  },
+  udpateButton: {
+    position: 'absolute',
+    left: 0,
+    top: 0
+  }
 }
 
-export default NetworkGraph;
+export function NetworkGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, sx, ...props }) {
+  const peer = useContext(PeerContext);
+  const [isLoading, setIsLoading] = useState(false)
+  const [debugInfos, setDebugInfos] = useState([])
+  const [data, setData] = useState({ nodes: [], links: [] })
+
+  const handleNetworkUpdate = useCallback(() => {
+    if (!peer) {
+      return
+    }
+
+    setIsLoading(true)
+    setData({ nodes: [], links: [] })
+    peer.requestPeerInfo();
+    
+    const updateSelfDebugInfo = async () => {
+      const selfDebugInfo = await peer.getPeerInfo();
+      selfDebugInfo.selfInfo.isSelf = true;
+
+      setDebugInfos(prevDebugInfos => prevDebugInfos.concat(selfDebugInfo));
+    }
+
+    updateSelfDebugInfo();
+  }, [peer]);
+
+  useEffect(() => {
+    if (!peer) {
+      return
+    }
+
+    const unsubscribeDebugInfo = peer.subscribeDebugInfo((peerId, msg) => {
+      if (msg.type === 'Response' && msg.dst === peer.peerId?.toString()) {
+        setDebugInfos(prevPeerInfos => prevPeerInfos.concat(msg.peerInfo))
+      }
+    })
+
+    return unsubscribeDebugInfo
+  }, [peer]);
+
+  const handleDebugInfos = useCallback((newDebugInfos) => {
+    setData(prevData => {
+      const nodesMap = prevData.nodes.reduce((acc, node) => {
+        acc.set(node.id, node);
+        return acc;
+      }, new Map());
+
+      const linksMap = prevData.links.reduce((acc, link) => {
+        acc.set(link.id, link);
+        return acc;
+      }, new Map());
+
+      newDebugInfos.forEach(({ selfInfo, connInfo }) => {
+        nodesMap.set(selfInfo.peerId, {
+          colorIndex: 0,
+          ...nodesMap.get(selfInfo.peerId),
+          id: selfInfo.peerId,
+          pseudonym: getPseudonymForPeerId(selfInfo.peerId),
+          multiaddrs: selfInfo.multiaddrs,
+          ...selfInfo.isSelf && { size: 14, colorIndex: 3, label: 'Self' }
+        })
+  
+        connInfo.forEach(conn => {
+          nodesMap.set(conn.peerId, {
+            colorIndex: 0,
+            label: 'Peer',
+            ...(conn.isPeerRelay && { colorIndex: 8, label: 'Relay (secondary)' }),
+            multiaddrs: [conn.multiaddr],
+            ...nodesMap.get(conn.peerId),
+            id: conn.peerId,
+            pseudonym: getPseudonymForPeerId(conn.peerId),
+            ...(conn.multiaddr === peer.relayNodeMultiaddr.toString() && { colorIndex: 2, label: 'Relay (primary)' })
+          })
+  
+          // Form unique links between peers by concatenating ids based on comparison
+          const linkId =  conn.peerId < selfInfo.peerId ? `${conn.peerId}-${selfInfo.peerId}` : `${selfInfo.peerId}-${conn.peerId}`;
+  
+          if (conn.type === 'relayed') {
+            linksMap.set(linkId, {
+              id: linkId,
+              source: selfInfo.peerId,
+              target: conn.hopRelayPeerId
+            })
+          } else {
+            linksMap.set(linkId, {
+              id: linkId,
+              source: selfInfo.peerId,
+              target: conn.peerId
+            })
+          }
+        })
+      });
+
+      return {
+        nodes: Array.from(nodesMap.values()),
+        links: Array.from(linksMap.values())
+      }
+    });
+
+    setIsLoading(false);
+    setDebugInfos([]);
+  }, [peer])
+  const throttledHandleDebugInfos = useThrottledCallback(handleDebugInfos, THROTTLE_WAIT_TIME, { leading: false });
+
+  useEffect(() => {
+    if (debugInfos.length) {
+      throttledHandleDebugInfos(debugInfos);
+    }
+  }, [debugInfos, throttledHandleDebugInfos])
+
+  useEffect(() => {
+    if (peer) {
+      // Update network graph on mount
+      handleNetworkUpdate();
+      setIsLoading(false);
+    }
+  }, [peer, handleNetworkUpdate]);
+
+  return (
+    <ScopedCssBaseline>
+      <Box
+        mt={1}
+        sx={{ ...STYLES.container, ...sx }}
+        {...props}
+      >
+        <LoadingButton
+          loading={isLoading}
+          variant="contained"
+          onClick={handleNetworkUpdate}
+          size="small"
+          sx={STYLES.udpateButton}
+        >
+          Update
+        </LoadingButton>
+        <GraphWithTooltip
+          data={data}
+          peer={peer}
+        />
+      </Box>
+    </ScopedCssBaseline>
+  )
+}

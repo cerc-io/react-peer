@@ -10,7 +10,7 @@ function GraphWithTooltip ({ data }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const [hoveredPeer, setHoveredPeer] = useState(null)
 
-  const onMouseOverNode = useCallback((data) => {
+  const onMouseOverNode = useCallback(function (data) {
     const { id: nodeId, multiaddrs } = data;
 
     setHoveredPeer({
@@ -18,7 +18,7 @@ function GraphWithTooltip ({ data }) {
       multiaddrs
     });
 
-    setAnchorEl(document.getElementById(nodeId));
+    setAnchorEl(this);
   }, []);
 
   return (
