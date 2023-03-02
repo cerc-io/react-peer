@@ -6,7 +6,8 @@ function ForceDirectedGraph ({
   containerHeight,
   onClickNode,
   onMouseOverNode,
-  onMouseOutNode
+  onMouseOutNode,
+  nodeCharge = -250
 }) {
   const containerRef = useRef(null)
   const [containerWidth, setContainerWidth] = useState(0)
@@ -15,10 +16,11 @@ function ForceDirectedGraph ({
     .force(
       "link",
       d3.forceLink()
-        .distance(150) // Minimum distance between nodes
+        .distance(150) // Minimum distance between linked nodes
         .id(d => d.id)
     )
-    .force("charge", d3.forceManyBody().strength(-150))
+    // Force between nodes
+    .force("charge", d3.forceManyBody().strength(nodeCharge))
   )
 
   const svgRef = useRef(d3.create("svg"));

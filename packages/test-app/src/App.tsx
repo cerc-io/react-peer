@@ -39,7 +39,7 @@ const STYLES = {
 declare global {
   interface Window {
     broadcast: (message: string) => void;
-    flood: (message: string) => Promise<void>;
+    floodMessage: (message: string) => Promise<void>;
     peer: Peer;
   }
 }
@@ -71,7 +71,7 @@ function App() {
       console.log(`${peerId.toString()} > ${data}`)
     })
 
-    window.flood = async (message: string) => {
+    window.floodMessage = async (message: string) => {
       return peer.floodMessage(TEST_TOPIC, message)
     }
 
@@ -102,7 +102,7 @@ function App() {
           </Card>
           <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
-              <Typography><b>Peers Graph</b></Typography>
+              <Typography><b>Graph (Peers)</b></Typography>
               <PeersGraph />
             </CardContent>
           </Card>
@@ -117,12 +117,14 @@ function App() {
               <Metrics />
             </CardContent>
           </Card>
-          <Card sx={STYLES.debugCard} raised>
-            <CardContent sx={STYLES.cardContent}>
-              <Typography><b>Network Graph</b></Typography>
-              <NetworkGraph />
-            </CardContent>
-          </Card>
+          {Boolean(config.peer.enableDebugInfo) && (
+            <Card sx={STYLES.debugCard} raised>
+              <CardContent sx={STYLES.cardContent}>
+                <Typography><b>Graph (Network)</b></Typography>
+                <NetworkGraph />
+              </CardContent>
+            </Card>
+          )}
         </Box>
       </main>
     </ThemeProvider>

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext, useEffect, useMemo } from 'react';
 
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { getPseudonymForPeerId } from '@cerc-io/peer';
@@ -94,22 +94,20 @@ export function NetworkGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, sx, 
             ...(conn.multiaddr === peer.relayNodeMultiaddr.toString() && { colorIndex: 2, label: 'Relay (primary)' })
           })
   
-          // Form unique links between peers by concatenating ids based on comparison
-          const linkId =  conn.peerId < selfInfo.peerId ? `${conn.peerId}-${selfInfo.peerId}` : `${selfInfo.peerId}-${conn.peerId}`;
-  
+          let target = conn.peerId
+
           if (conn.type === 'relayed') {
-            linksMap.set(linkId, {
-              id: linkId,
-              source: selfInfo.peerId,
-              target: conn.hopRelayPeerId
-            })
-          } else {
-            linksMap.set(linkId, {
-              id: linkId,
-              source: selfInfo.peerId,
-              target: conn.peerId
-            })
+            target = conn.hopRelayPeerId
           }
+
+          // Form unique links between peers by concatenating ids based on comparison
+          const linkId =  target < selfInfo.peerId ? `${target}-${selfInfo.peerId}` : `${selfInfo.peerId}-${target}`;
+  
+          linksMap.set(linkId, {
+            id: linkId,
+            source: selfInfo.peerId,
+            target
+          })
         })
       });
 
@@ -157,6 +155,7 @@ export function NetworkGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, sx, 
         <GraphWithTooltip
           data={data}
           peer={peer}
+          nodeCharge={-1000}
         />
       </Box>
     </ScopedCssBaseline>

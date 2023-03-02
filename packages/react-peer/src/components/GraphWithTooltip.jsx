@@ -6,7 +6,7 @@ import ForceDirectedGraph from './ForceDirectedGraph';
 // TODO: Change height on changing browser window size
 const CONTAINER_HEIGHT = (window.innerHeight / 2) - 80
 
-function GraphWithTooltip ({ data }) {
+function GraphWithTooltip ({ data, nodeCharge }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const [hoveredPeer, setHoveredPeer] = useState(null)
 
@@ -28,6 +28,7 @@ function GraphWithTooltip ({ data }) {
         containerHeight={CONTAINER_HEIGHT}
         onMouseOverNode={onMouseOverNode}
         onMouseOutNode={() => setAnchorEl(null)}
+        nodeCharge={nodeCharge}
       />
       <Popover
         id="mouse-over-popover"
