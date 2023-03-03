@@ -19,7 +19,7 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pro
       return
     }
 
-    const newConnections = peer.node.getConnections();
+    const newConnections = peer.getConnectionsInfo();
 
     setConnections(prevConnections => {
       // Compare and check if connections changed
@@ -65,36 +65,33 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pro
     }
 
     const links = [];
-    const relayMultiaddr = peer.relayNodeMultiaddr
+    const { peerId: selfPeerId, multiaddrs: selfMultiaddrs } = peer.getSelfInfo()
 
     const remotePeerNodes = connections.map(connection => {
-      const connectionMultiAddr = connection.remoteAddr
-      
       const nodeData = {
-        id: connection.remotePeer.toString(),
-        pseudonym: getPseudonymForPeerId(connection.remotePeer.toString()),
-        multiaddrs: [connectionMultiAddr.toString()],
+        id: connection.peerId,
+        pseudonym: getPseudonymForPeerId(connection.peerId),
+        multiaddrs: [connection.multiaddr],
         colorIndex: 0,
         label: 'Peer'
       }
       
-      if (peer.isRelayPeerMultiaddr(connectionMultiAddr.toString())) {
-        links.push({ source: peer.peerId.toString(), target: connection.remotePeer.toString() })
+      if (connection.isPeerRelay) {
+        links.push({ source: selfPeerId, target: connection.peerId })
         
         nodeData.colorIndex = 8;
         nodeData.label = 'Relay (secondary)'
   
-        if (connectionMultiAddr.equals(relayMultiaddr)) {
+        if (connection.isPeerRelayPrimary) {
           nodeData.colorIndex = 2;
           nodeData.label = 'Relay (primary)'
         }
       } else {
         // If relayed connection
-        if (connectionMultiAddr.protoNames().includes('p2p-circuit')) {
-          const relayPeerId = connectionMultiAddr.decapsulate('p2p-circuit/p2p').getPeerId();
-          links.push({ source: relayPeerId.toString(), target: connection.remotePeer.toString() });
+        if (connection.type === 'relayed') {
+          links.push({ source: connection.hopRelayPeerId, target: selfPeerId });
         } else {
-          links.push({ source: peer.peerId.toString(), target: connection.remotePeer.toString() });
+          links.push({ source: selfPeerId, target: connection.peerId });
         }
       }
     
@@ -104,12 +101,12 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pro
     return {
       nodes: [
         {
-          id: peer.peerId.toString(),
-          pseudonym: getPseudonymForPeerId(peer.peerId.toString()),
+          id: selfPeerId,
+          pseudonym: getPseudonymForPeerId(selfPeerId),
           size: 14,
           colorIndex: 3,
           label: 'Self',
-          multiaddrs: peer.node.getMultiaddrs().map(multiaddr => multiaddr.toString())
+          multiaddrs: selfMultiaddrs
         },
         ...remotePeerNodes
       ],

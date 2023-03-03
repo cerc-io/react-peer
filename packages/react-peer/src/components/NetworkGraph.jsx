@@ -37,7 +37,7 @@ export function NetworkGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, sx, 
     peer.requestPeerInfo();
     
     const updateSelfDebugInfo = async () => {
-      const selfDebugInfo = await peer.getPeerInfo();
+      const selfDebugInfo = await peer.getInfo();
       selfDebugInfo.selfInfo.isSelf = true;
 
       setDebugInfos(prevDebugInfos => prevDebugInfos.concat(selfDebugInfo));
