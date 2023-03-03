@@ -56,7 +56,7 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
           <Chip size="small" label={peer.node.getConnections().length} variant="outlined" />
         </b>
       </Typography>
-      {peer.getConnectionsInfo().map(connection => (
+      {peer.getPeerConnectionsInfo().map(connection => (
         <TableContainer sx={STYLES.connectionsTable} key={connection.id} component={Paper}>
           <Table size="small">
             <TableBody>

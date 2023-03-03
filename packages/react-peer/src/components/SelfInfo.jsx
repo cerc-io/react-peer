@@ -26,7 +26,7 @@ export function SelfInfo ({ relayNodes, refreshInterval = DEFAULT_REFRESH_INTERV
   const [primaryRelay, setPrimaryRelay] = useState(localStorage.getItem('primaryRelay') ?? '')
 
   const updateInfo = useCallback(() => {
-    setSelfInfo(peer.getSelfInfo())
+    setSelfInfo(peer.getPeerSelfInfo())
   }, [peer])
   const throttledUpdateInfo = useThrottledCallback(updateInfo, THROTTLE_WAIT_TIME);
 

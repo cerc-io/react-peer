@@ -19,7 +19,7 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pro
       return
     }
 
-    const newConnections = peer.getConnectionsInfo();
+    const newConnections = peer.getPeerConnectionsInfo();
 
     setConnections(prevConnections => {
       // Compare and check if connections changed
@@ -65,7 +65,7 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pro
     }
 
     const links = [];
-    const { peerId: selfPeerId, multiaddrs: selfMultiaddrs } = peer.getSelfInfo()
+    const { peerId: selfPeerId, multiaddrs: selfMultiaddrs } = peer.getPeerSelfInfo()
 
     const remotePeerNodes = connections.map(connection => {
       const nodeData = {
