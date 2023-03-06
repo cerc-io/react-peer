@@ -19,8 +19,7 @@ function ForceDirectedGraph ({
         .distance(150) // Minimum distance between linked nodes
         .id(d => d.id)
     )
-    // Force between nodes
-    .force("charge", d3.forceManyBody().strength(nodeCharge))
+    .force("charge", d3.forceManyBody().strength(nodeCharge)) // Force between nodes
   )
 
   const svgRef = useRef(d3.create("svg"));
@@ -73,7 +72,7 @@ function ForceDirectedGraph ({
     linkRef.current = linkRef.current
       .data(links)
       .join("line")
-      // .attr('marker-end','url(#arrowhead)');
+      // .attr('marker-end','url(#arrowhead)'); // Add arrow to links
 
     simulation.nodes(nodes);
     simulation.force("link").links(links);
@@ -106,7 +105,7 @@ function ForceDirectedGraph ({
     labelRef.current = svgRef.current.append("g")
       .selectAll("text");
 
-    // Method for setting positions of SVG elements
+    // Simulation tick handler for setting positions of SVG elements
     const onTick = () => {
       linkRef.current
         .attr("x1", d => d.source.x)
@@ -182,9 +181,9 @@ const drag = simulation => {
   }
 
   return d3.drag()
-      .on("start", dragstarted)
-      .on("drag", dragged)
-      .on("end", dragended);
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended);
 }
 
 // SVG for arrowheads

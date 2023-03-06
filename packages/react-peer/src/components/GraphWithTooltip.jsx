@@ -3,6 +3,12 @@ import { Box, Popover, Table, TableBody, TableCell, TableContainer, TableRow, Ty
 import { getPseudonymForPeerId } from '@cerc-io/peer';
 import ForceDirectedGraph from './ForceDirectedGraph';
 
+const STYLES = {
+  popover: {
+    pointerEvents: 'none'
+  }
+}
+
 // TODO: Change height on changing browser window size
 const CONTAINER_HEIGHT = (window.innerHeight / 2) - 80
 
@@ -32,9 +38,7 @@ function GraphWithTooltip ({ data, nodeCharge }) {
       />
       <Popover
         id="mouse-over-popover"
-        sx={{
-          pointerEvents: 'none',
-        }}
+        sx={STYLES.popover}
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={() => setAnchorEl(null)}

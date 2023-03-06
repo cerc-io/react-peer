@@ -2,12 +2,12 @@ import React, { useState, useCallback, useContext, useEffect, useMemo } from 're
 
 import { Box } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
-import { getPseudonymForPeerId } from '@cerc-io/peer';
 
 import { PeerContext } from '../context/PeerContext';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import GraphWithTooltip from './GraphWithTooltip';
 import { useThrottledCallback } from '../hooks/throttledCallback';
+import { updateGraphDataWithDebugInfo } from '../utils';
 
 export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
   const peer = useContext(PeerContext);
@@ -61,57 +61,23 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pro
 
   const data = useMemo(() => {
     if (!peer) {
-      return
+      return {
+        data: [],
+        links: []
+      }
     }
 
-    const links = [];
-    const { peerId: selfPeerId, multiaddrs: selfMultiaddrs } = peer.getPeerSelfInfo()
+    const debugInfo = {
+      selfInfo: peer.getPeerSelfInfo(),
+      connInfo: connections
+    }
 
-    const remotePeerNodes = connections.map(connection => {
-      const nodeData = {
-        id: connection.peerId,
-        pseudonym: getPseudonymForPeerId(connection.peerId),
-        multiaddrs: [connection.multiaddr],
-        colorIndex: 0,
-        label: 'Peer'
-      }
-      
-      if (connection.isPeerRelay) {
-        links.push({ source: selfPeerId, target: connection.peerId })
-        
-        nodeData.colorIndex = 8;
-        nodeData.label = 'Relay (secondary)'
-  
-        if (connection.isPeerRelayPrimary) {
-          nodeData.colorIndex = 2;
-          nodeData.label = 'Relay (primary)'
-        }
-      } else {
-        // If relayed connection
-        if (connection.type === 'relayed') {
-          links.push({ source: connection.hopRelayPeerId, target: selfPeerId });
-        } else {
-          links.push({ source: selfPeerId, target: connection.peerId });
-        }
-      }
-    
-      return nodeData;
-    })
+    const {nodesMap, linksMap} = updateGraphDataWithDebugInfo(peer, debugInfo);
 
     return {
-      nodes: [
-        {
-          id: selfPeerId,
-          pseudonym: getPseudonymForPeerId(selfPeerId),
-          size: 14,
-          colorIndex: 3,
-          label: 'Self',
-          multiaddrs: selfMultiaddrs
-        },
-        ...remotePeerNodes
-      ],
-      links
-    };
+      nodes: Array.from(nodesMap.values()),
+      links: Array.from(linksMap.values())
+    }
   }, [peer, connections]);
 
   return (
@@ -121,7 +87,6 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pro
           <GraphWithTooltip
             data={data}
             connections={connections}
-            peer={peer}
           />
         )}
       </Box>

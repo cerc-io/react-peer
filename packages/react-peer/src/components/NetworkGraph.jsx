@@ -3,12 +3,12 @@ import React, { useState, useCallback, useContext, useEffect, useMemo } from 're
 import { Box } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { getPseudonymForPeerId } from '@cerc-io/peer';
 
 import { PeerContext } from '../context/PeerContext';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import GraphWithTooltip from './GraphWithTooltip';
 import { useThrottledCallback } from '../hooks/throttledCallback';
+import { updateGraphDataWithDebugInfo } from '../utils';
 
 const STYLES = {
   container: {
@@ -39,7 +39,6 @@ export function NetworkGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, sx, 
     const updateSelfDebugInfo = async () => {
       const selfDebugInfo = await peer.getInfo();
       selfDebugInfo.selfInfo.isSelf = true;
-
       setDebugInfos(prevDebugInfos => prevDebugInfos.concat(selfDebugInfo));
     }
 
@@ -62,53 +61,18 @@ export function NetworkGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, sx, 
 
   const handleDebugInfos = useCallback((newDebugInfos) => {
     setData(prevData => {
-      const nodesMap = prevData.nodes.reduce((acc, node) => {
+      let nodesMap = prevData.nodes.reduce((acc, node) => {
         acc.set(node.id, node);
         return acc;
       }, new Map());
 
-      const linksMap = prevData.links.reduce((acc, link) => {
+      let linksMap = prevData.links.reduce((acc, link) => {
         acc.set(link.id, link);
         return acc;
       }, new Map());
 
-      newDebugInfos.forEach(({ selfInfo, connInfo }) => {
-        nodesMap.set(selfInfo.peerId, {
-          colorIndex: 0,
-          ...nodesMap.get(selfInfo.peerId),
-          id: selfInfo.peerId,
-          pseudonym: getPseudonymForPeerId(selfInfo.peerId),
-          multiaddrs: selfInfo.multiaddrs,
-          ...selfInfo.isSelf && { size: 14, colorIndex: 3, label: 'Self' }
-        })
-  
-        connInfo.forEach(conn => {
-          nodesMap.set(conn.peerId, {
-            colorIndex: 0,
-            label: 'Peer',
-            ...(conn.isPeerRelay && { colorIndex: 8, label: 'Relay (secondary)' }),
-            multiaddrs: [conn.multiaddr],
-            ...nodesMap.get(conn.peerId),
-            id: conn.peerId,
-            pseudonym: getPseudonymForPeerId(conn.peerId),
-            ...(conn.multiaddr === peer.relayNodeMultiaddr.toString() && { colorIndex: 2, label: 'Relay (primary)' })
-          })
-  
-          let target = conn.peerId
-
-          if (conn.type === 'relayed') {
-            target = conn.hopRelayPeerId
-          }
-
-          // Form unique links between peers by concatenating ids based on comparison
-          const linkId =  target < selfInfo.peerId ? `${target}-${selfInfo.peerId}` : `${selfInfo.peerId}-${target}`;
-  
-          linksMap.set(linkId, {
-            id: linkId,
-            source: selfInfo.peerId,
-            target
-          })
-        })
+      newDebugInfos.forEach(debugInfo => {
+        ({nodesMap, linksMap} = updateGraphDataWithDebugInfo(peer, debugInfo, nodesMap, linksMap))
       });
 
       return {
@@ -132,7 +96,6 @@ export function NetworkGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, sx, 
     if (peer) {
       // Update network graph on mount
       handleNetworkUpdate();
-      setIsLoading(false);
     }
   }, [peer, handleNetworkUpdate]);
 
