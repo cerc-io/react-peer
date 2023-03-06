@@ -10,7 +10,7 @@ const STYLES = {
 }
 
 // TODO: Change height on changing browser window size
-const CONTAINER_HEIGHT = (window.innerHeight / 2) - 80
+const CONTAINER_HEIGHT = (window.innerHeight / 2) - 40
 
 function GraphWithTooltip ({ data, nodeCharge }) {
   const [anchorEl, setAnchorEl] = useState(null)

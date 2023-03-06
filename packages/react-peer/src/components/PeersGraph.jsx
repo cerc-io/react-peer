@@ -62,7 +62,7 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pro
   const data = useMemo(() => {
     if (!peer) {
       return {
-        data: [],
+        nodes: [],
         links: []
       }
     }
@@ -83,12 +83,9 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pro
   return (
     <ScopedCssBaseline>
       <Box mt={1} {...props}>
-        { peer && (
-          <GraphWithTooltip
-            data={data}
-            connections={connections}
-          />
-        )}
+        <GraphWithTooltip
+          data={data}
+        />
       </Box>
     </ScopedCssBaseline>
   )

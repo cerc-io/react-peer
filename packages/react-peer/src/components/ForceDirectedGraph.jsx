@@ -22,7 +22,7 @@ function ForceDirectedGraph ({
     .force("charge", d3.forceManyBody().strength(nodeCharge)) // Force between nodes
   )
 
-  const svgRef = useRef(d3.create("svg"));
+  const svgRef = useRef(d3.create("svg").attr('display', 'block'));
   const linkRef = useRef(null);
   const nodeRef = useRef(null);
   const labelRef = useRef(null);

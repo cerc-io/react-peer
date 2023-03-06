@@ -47,16 +47,16 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
     }
   }, [throttledForceUpdate])
 
-  return peer && peer.node && (
+  return (
     <Box {...props}>
       <Typography variant="subtitle2" color="inherit" noWrap>
         <b>
           Remote Peer Connections
           &nbsp;
-          <Chip size="small" label={peer.node.getConnections().length} variant="outlined" />
+          <Chip size="small" label={peer?.node.getConnections().length ?? 0} variant="outlined" />
         </b>
       </Typography>
-      {peer.getPeerConnectionsInfo().map(connection => (
+      {peer && peer.getPeerConnectionsInfo().map(connection => (
         <TableContainer sx={STYLES.connectionsTable} key={connection.id} component={Paper}>
           <Table size="small">
             <TableBody>

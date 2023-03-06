@@ -9,7 +9,7 @@ const PEER_INIT_CONFIG = {
   maxRelayConnections: 5
 };
 
-export const PeerProvider = ({ relayNodes, children, peerConfig = {} }) => {
+export const PeerProvider = ({ peerConfig = {}, relayNodes, children }) => {
   const [peer, setPeer] = React.useState(null);
   const [initConfig, setInitConfig] = React.useState({ ...PEER_INIT_CONFIG, ...peerConfig });
 
