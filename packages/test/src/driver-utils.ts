@@ -10,19 +10,15 @@ import {
   TOTAL_PEERS,
   MESSAGE_CHECK_TIMEOUT
 } from './constants';
-import xpaths from '../utils/elements-xpaths.json';
-import { TEST_APP_URL, checkMobyMaskMessage, getCurrentDateAndTime } from './utils';
+import { TEST_APP_URL } from './utils';
+import xpaths from './mobymask/elements-xpaths.json';
+import { checkMobyMaskMessage } from './mobymask/utils';
 
 const log = debug('laconic:test');
 
 const ERR_PEER_INIT_TIMEOUT = 'Peer intialization timed out';
 const ERR_PEER_CONNECTIONS = 'Peer connections timed out';
 const ERR_MSG_NOT_RECEIVED = 'Required message not received';
-
-export const MOBYMASK_MESSAGE_KINDS = {
-  INVOKE: 'invoke',
-  REVOKE: 'revoke'
-};
 
 // Scripts to be run in browsers
 export const SCRIPT_GET_PEER_ID = 'return window.peer.peerId?.toString()';
@@ -77,29 +73,14 @@ const osBrowserCombinations = [
   }
 ];
 
-const getBrowserCapabilities = (buildName: string, osBrowserCombination: any, index: number): webdriver.Capabilities => {
-  const capabilities = {
-    'bstack:options': {
-      os: osBrowserCombination.osName,
-      osVersion: osBrowserCombination.osVersion,
-      browserVersion: osBrowserCombination.browserVersion,
-      buildName,
-      sessionName: `${index}-${osBrowserCombination.osName}-${osBrowserCombination.browserName}`
-    },
-    browserName: osBrowserCombination.browserName
-  };
-
-  return new webdriver.Capabilities(new Map(Object.entries(capabilities)));
-};
-
 export async function setupBrowsers (serverURL: string): Promise<WebDriver[]> {
   let peerDrivers: WebDriver[] = [];
-  const buildName = `Build-${getCurrentDateAndTime()}`;
+  const buildName = `Build-${_getCurrentDateAndTime()}`;
 
   try {
     const peerDriverPromises: Promise<ThenableWebDriver>[] = [];
     for (let i = 0; i < TOTAL_PEERS; i++) {
-      const capabilities = getBrowserCapabilities(buildName, osBrowserCombinations[i % osBrowserCombinations.length], i);
+      const capabilities = _getBrowserCapabilities(buildName, osBrowserCombinations[i % osBrowserCombinations.length], i);
       peerDriverPromises.push(startABrowserPeer(serverURL, capabilities));
     }
 
@@ -113,7 +94,7 @@ export async function setupBrowsers (serverURL: string): Promise<WebDriver[]> {
   return peerDrivers;
 }
 
-export const startABrowserPeer = async (serverURL: string, capabilities: webdriver.Capabilities): Promise<webdriver.ThenableWebDriver
+const startABrowserPeer = async (serverURL: string, capabilities: webdriver.Capabilities): Promise<webdriver.ThenableWebDriver
 > => {
   const prefs = new logging.Preferences();
   prefs.setLevel(logging.Type.BROWSER, logging.Level.ALL);
@@ -230,4 +211,24 @@ export const markSessionAsPassed = async (peerDrivers: WebDriver[]): Promise<voi
 
 export const scrollElementIntoView = async (element : webdriver.WebElement): Promise<void> => {
   await element.getDriver().executeScript('arguments[0].scrollIntoView(true);', element);
+};
+
+const _getBrowserCapabilities = (buildName: string, osBrowserCombination: any, index: number): webdriver.Capabilities => {
+  const capabilities = {
+    'bstack:options': {
+      os: osBrowserCombination.osName,
+      osVersion: osBrowserCombination.osVersion,
+      browserVersion: osBrowserCombination.browserVersion,
+      buildName,
+      sessionName: `${index}-${osBrowserCombination.osName}-${osBrowserCombination.browserName}`
+    },
+    browserName: osBrowserCombination.browserName
+  };
+
+  return new webdriver.Capabilities(new Map(Object.entries(capabilities)));
+};
+
+const _getCurrentDateAndTime = (): string => {
+  const now = new Date();
+  return `${now.getDate()}-${now.getMonth()}-${now.getFullYear()}-${now.getHours()}-${now.getMinutes()}`;
 };

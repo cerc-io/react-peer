@@ -21,7 +21,7 @@ import {
   setupBrowsers
 } from './driver-utils';
 import { FLOOD_CHECK_DELAY } from './constants';
-import { testInvitation, testInviteRevocation, testMemberEndorsements, testPhisherReports } from './helpers';
+import { testInvitation, testInviteRevocation, testMemberEndorsements, testPhisherReports } from './mobymask/helpers';
 import { TEST_APP_MEMBER_URL, sleep } from './utils';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
