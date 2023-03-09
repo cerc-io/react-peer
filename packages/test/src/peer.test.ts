@@ -131,7 +131,6 @@ describe('peer-test', () => {
       await testMemberEndorsements(reportSender, reportReceivers, members);
     });
 
-    // TODO: Reuse code from previous tests
     describe('test invite links', async () => {
       let invitor: webdriver.WebDriver;
       let invitee: webdriver.WebDriver;
