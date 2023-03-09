@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */
+
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import path from 'path';
@@ -5,23 +7,22 @@ import * as dotenv from 'dotenv';
 import debug from 'debug';
 import 'mocha';
 import { expect } from 'chai';
-import webdriver, { until, WebDriver } from 'selenium-webdriver';
+import webdriver, { WebDriver } from 'selenium-webdriver';
 
 import {
   waitForConnection,
   sendFlood,
   getLogs,
-  sleep,
   quitBrowsers,
-  capabilities,
-  setupBrowsersWithCapabilities,
-  SCRIPT_GET_PEER_ID,
   markSessionAsFailed,
-  TEST_APP_MEMBER_URL,
-  navigateURL
-} from './utils';
-import { FLOOD_CHECK_DELAY, ONE_SECOND } from './constants';
-import xpaths from '../helpers/elements-xpaths.json';
+  navigateURL,
+  markSessionAsPassed,
+  SCRIPT_GET_PEER_ID,
+  setupBrowsers
+} from './driver-utils';
+import { FLOOD_CHECK_DELAY } from './constants';
+import { testInvitation, testInviteRevocation, testMemberEndorsements, testPhisherReports } from './helpers';
+import { TEST_APP_MEMBER_URL, sleep } from './utils';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -36,9 +37,20 @@ interface Arguments {
 let peerDrivers: WebDriver[] = [];
 let peerIds: string[] = [];
 
+// Use a flag since we cannot access currentTest.state in the after hook
+// https://stackoverflow.com/a/22050548/12594335
+let testFailed = false;
+
 describe('peer-test', () => {
   afterEach(async function () {
-    if (this.currentTest?.state === 'failed') {
+    // Skip block if test is skipped
+    if (this.currentTest?.state === 'pending') {
+      return;
+    }
+
+    testFailed = this.currentTest?.state === 'failed';
+
+    if (testFailed) {
       // Mark the Browserstack sessions as failed
       await markSessionAsFailed(peerDrivers);
 
@@ -48,9 +60,9 @@ describe('peer-test', () => {
   });
 
   after(async function () {
-    if (this.currentTest?.state === 'failed') {
-      // Mark the Browserstack sessions as failed
-      await markSessionAsFailed(peerDrivers);
+    if (!testFailed) {
+      // Mark the Browserstack sessions as passed
+      await markSessionAsPassed(peerDrivers);
     }
 
     // Quit browser instances
@@ -59,16 +71,25 @@ describe('peer-test', () => {
 
   describe('peer-connectivity-tests', () => {
     before('setup browsers', async () => {
-      log('Setting up the browsers')
+      log('Setting up the browsers');
 
-      const chromeInWindowsCapabilities = new webdriver.Capabilities(new Map(Object.entries(capabilities)));
-      peerDrivers = await setupBrowsersWithCapabilities(BSTACK_SERVER_URL, chromeInWindowsCapabilities);
+      // Try setting up the browsers and exit if any error is thrown
+      try {
+        peerDrivers = await setupBrowsers(BSTACK_SERVER_URL);
+        peerIds = await Promise.all(peerDrivers.map((peerDriver): Promise<string> => {
+          return peerDriver.executeScript(SCRIPT_GET_PEER_ID);
+        }));
+      } catch (err) {
+        log('Error while setting up browsers');
 
-      peerIds = await Promise.all(peerDrivers.map((peerDriver): Promise<string> => {
-        return peerDriver.executeScript(SCRIPT_GET_PEER_ID);
-      }));
+        // Mark the Browserstack sessions as failed
+        testFailed = true;
+        await markSessionAsFailed(peerDrivers);
 
-      log('Setup done')
+        throw (err);
+      }
+
+      log('Setup done');
     });
 
     it('every peer connects to at least one of the simulated peers', async () => {
@@ -93,55 +114,9 @@ describe('peer-test', () => {
       // Navigate to app url
       await navigateURL(reportSender, TEST_APP_MEMBER_URL);
 
-      await Promise.all(reportReceivers.map(async (reportReceiver): Promise<void> => {
-        // Open debug panel
-        const debugButton = await reportReceiver.findElement(webdriver.By.xpath(xpaths.mobyDebugPanelOpen));
-        await debugButton.click();
-
-        // Switch to messages pane
-        const messagesPaneButton = await reportReceiver.findElement(webdriver.By.xpath(xpaths.mobyDebugMessagePanelButton));
-        await messagesPaneButton.click();
-      }));
-
       // Test input values
       const phishers = ['phisher1', 'phisher2'];
-      const expectedPhisherReports = phishers.map(phisher => `method: claimIfPhisher, value: TWT:${phisher}`);
-
-      // Load phishers elements
-      const claimPhisherInput = await reportSender.findElement(webdriver.By.xpath(xpaths.mobyPhisherInputBox));
-      const claimPhisherButton = await reportSender.findElement(webdriver.By.xpath(xpaths.mobyPhisherAddToBatchButton));
-
-      // Populate phisher input boxes
-      for (const phisher of phishers) {
-        await claimPhisherInput.clear();
-        await claimPhisherInput.sendKeys(phisher);
-        await claimPhisherButton.click();
-      }
-
-      // Submit batch of phishers to p2p network
-      const submitPhisherBatchButton = await reportSender.findElement(webdriver.By.xpath(xpaths.mobyPhisherSubmitBatchButton));
-      await submitPhisherBatchButton.click();
-
-      // Wait before checking for flood messages
-      await sleep(FLOOD_CHECK_DELAY);
-
-      await Promise.all(reportReceivers.map(async (reportReceiver) => {
-        // Access message block
-        const messageBlock = await reportReceiver.findElement(webdriver.By.xpath(xpaths.mobyDebugMessageBlock));
-
-        // Wait for it to be populated within a timeout
-        await reportReceiver.wait(async () => {
-          const msgs = await messageBlock.getText();
-          return msgs !== '';
-        }, FLOOD_CHECK_DELAY);
-
-        const messages = await messageBlock.getText();
-
-        // Check if message includes the phisher reports
-        for (const expectedPhisherReport of expectedPhisherReports) {
-          expect(messages).to.include(expectedPhisherReport);
-        }
-      }));
+      await testPhisherReports(reportSender, reportReceivers, phishers);
     });
 
     it('peers send and receive member endorsements', async () => {
@@ -153,78 +128,100 @@ describe('peer-test', () => {
 
       // Test input values
       const members = ['member1', 'member2'];
-      const expectedMemberEndorsements = members.map(member => `method: claimIfMember, value: TWT:${member}`);
-
-      // Load members elements
-      const claimMemberInput = await reportSender.findElement(webdriver.By.xpath(xpaths.mobyMemberInputBox));
-      const claimMemberButton = await reportSender.findElement(webdriver.By.xpath(xpaths.mobyMemberAddToBatchButton));
-
-      // Populate member input boxes
-      for (const member of members) {
-        await claimMemberInput.clear();
-        await claimMemberInput.sendKeys(member);
-        await claimMemberButton.click();
-      }
-
-      // Submit batch of members to p2p network
-      const submitMemberBatchButton = await reportSender.findElement(webdriver.By.xpath(xpaths.mobyMemberSubmitBatchButton));
-      await submitMemberBatchButton.click();
-
-      // Wait before checking for flood messages
-      await sleep(FLOOD_CHECK_DELAY);
-
-      await Promise.all(reportReceivers.map(async (reportReceiver) => {
-        // Access message block
-        // TODO: Use an array list of arrived messages instead of message block
-        const messageBlock = await reportReceiver.findElement(webdriver.By.xpath(xpaths.mobyDebugMessageBlock));
-
-        // Read all the messsages received
-        const messages = await messageBlock.getText();
-
-        // Check if message includes the member endorsements
-        for (const expectedMemberEndorsement of expectedMemberEndorsements) {
-          expect(messages).to.include(expectedMemberEndorsement);
-        }
-      }));
+      await testMemberEndorsements(reportSender, reportReceivers, members);
     });
 
-    it('members can create invite links for other peers', async(done) => {
-      // To be run along with the above tests
+    // TODO: Reuse code from previous tests
+    describe('test invite links', async () => {
+      let invitor: webdriver.WebDriver;
+      let invitee: webdriver.WebDriver;
+      let inviteLink: string;
 
-      // Skip/pass this test if testing with < 2 peers
-      if (peerDrivers.length < 2) {
-        log('Skipping test as number of peers < 2')
-        done();
-      }
+      let secondaryInvitee: webdriver.WebDriver;
+      let secondaryInviteLink: string;
 
-      // Select first peer as the invitor and the second one as the invitee
-      const invitor = peerDrivers[0];
-      const invitee = peerDrivers[1];
+      let reportReceivers : webdriver.WebDriver[];
 
-      const createInviteButton = await invitor.findElement(webdriver.By.xpath(xpaths.mobyMemberCreateInvite));
-      await createInviteButton.click();
+      // Select first peer as the phishing reporter, rest as report receivers
+      before('setup drivers', async function () {
+        if (peerDrivers.length < 2) {
+          log('Skipping this section as number of peers < 2');
+          this.skip();
+        }
 
-      // Create invite link for isMember1
-      await invitor.switchTo().alert().sendKeys("Member1");
-      await invitor.switchTo().alert().accept();
+        invitor = peerDrivers[0];
+        invitee = peerDrivers[1];
+      });
 
-      await invitor.switchTo().alert().accept();
+      it('members can create invite links for other peers', async () => {
+        inviteLink = await testInvitation(invitor, invitee, 'Member1');
+      });
 
-      const outstandingLinkElements = await invitor.findElements(webdriver.By.xpath(xpaths.mobyMemberInviteLink));
-      const latestInviteLink = await outstandingLinkElements.slice(-1)[0].getText();
+      it('invited members can make member endorsements', async () => {
+        // Test input values
+        const members = ['invitee-member1', 'invitee-member2'];
+        reportReceivers = peerDrivers.slice(2).concat(invitor);
 
-      // Let invitee peer navigate to the created invite link
-      await navigateURL(invitee, latestInviteLink);
-      expect(await invitee.wait(until.elementsLocated(webdriver.By.xpath(xpaths.mobyMemberCreateInvite)), 10 * ONE_SECOND)).to.not.throw();
+        await testMemberEndorsements(invitee, reportReceivers, members);
+      });
+
+      it('invited members can create invite links for other peers', async () => {
+        // Skip this test if number of peers < 3
+        if (peerDrivers.length < 3) {
+          log('Skipping this test as number of peers < 3');
+          return;
+        }
+
+        secondaryInvitee = peerDrivers[2];
+
+        secondaryInviteLink = await testInvitation(invitee, secondaryInvitee, 'Member2');
+      });
+
+      it('secondary invitees can make member endorsements', async () => {
+        // Skip this test if number of peers < 3
+        if (peerDrivers.length < 3) {
+          log('Skipping this test as number of peers < 3');
+          return;
+        }
+
+        // Test input values
+        const members = ['sec-invitee-member1', 'sec-invitee-member2'];
+        reportReceivers = peerDrivers.slice(0, 2).concat(peerDrivers.slice(3));
+
+        await testMemberEndorsements(secondaryInvitee, reportReceivers, members);
+      });
+
+      it('invited members can revoke invites created by them', async () => {
+        // To be run along with the test to create invite link from invited members
+        // Skip this test if number of peers < 3
+        if (peerDrivers.length < 3) {
+          log('Skipping this test as number of peers < 3');
+          return;
+        }
+
+        // Reassign report receivers
+        reportReceivers = peerDrivers.slice(2).concat(peerDrivers[0]);
+
+        await testInviteRevocation(invitee, reportReceivers, secondaryInviteLink);
+      });
+
+      it('members can revoke invites', async () => {
+        // To be run along with the test to create invite link from members
+
+        // Reassign report receivers
+        reportReceivers = peerDrivers.slice(1);
+
+        await testInviteRevocation(invitor, reportReceivers, inviteLink);
+      });
     });
   });
 
   (args.mobymask ? describe.skip : describe)('test-app-tests', () => {
-    it('peers send and receive flood messages', async (done) => {
+    it('peers send and receive flood messages', async () => {
       // Skip/pass this test if testing with < 2 peers
       if (peerDrivers.length < 2) {
-        log('Skipping test as number of peers < 2')
-        done();
+        log('Skipping test as number of peers < 2');
+        return;
       }
 
       const expectedFloodMessages: Map<string, string> = new Map();
@@ -278,7 +275,7 @@ function _getArgv (): Arguments {
   }).options({
     mobymask: {
       type: 'boolean',
-      describe: "Whether to run mobymask tests",
+      describe: 'Whether to run mobymask tests',
       default: false
     }
   }).parseSync();
