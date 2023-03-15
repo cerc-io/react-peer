@@ -133,7 +133,7 @@ export async function testInvitation (invitor: WebDriver, invitee: WebDriver, ta
   await createInviteButton.click();
 
   await invitor.wait(until.alertIsPresent(), 3 * ONE_SECOND);
-  await invitor.switchTo().alert().sendKeys(tag);
+  // await invitor.switchTo().alert().sendKeys(tag);
   await invitor.switchTo().alert().accept();
 
   // Wait for confirmation alert

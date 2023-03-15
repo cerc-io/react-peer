@@ -28,7 +28,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const log = debug('laconic:test');
 
-const BSTACK_SERVER_URL = `http://${process.env.BSTACK_USERNAME}:${process.env.BSTACK_ACCESS_KEY}@hub-cloud.browserstack.com/wd/hub`;
+const SERVER_URL = 'http://localhost:4444';
 
 interface Arguments {
   mobymask: boolean;
@@ -75,7 +75,7 @@ describe('peer-test', () => {
 
       // Try setting up the browsers and exit if any error is thrown
       try {
-        peerDrivers = await setupBrowsers(BSTACK_SERVER_URL);
+        peerDrivers = await setupBrowsers(SERVER_URL);
         peerIds = await Promise.all(peerDrivers.map((peerDriver): Promise<string> => {
           return peerDriver.executeScript(SCRIPT_GET_PEER_ID);
         }));

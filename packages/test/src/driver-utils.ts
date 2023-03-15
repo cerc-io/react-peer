@@ -42,34 +42,10 @@ window.peer.subscribeTopic('mobymask', (peerId, data) => {
 
 const osBrowserCombinations = [
   {
-    osName: 'Windows',
-    osVersion: '11',
-    browserName: 'Chrome',
-    browserVersion: '110.0'
-  },
-  {
-    osName: 'OS X',
-    osVersion: 'Monterey',
-    browserName: 'Chrome',
-    browserVersion: '110.0'
-  },
-  {
-    osName: 'Windows',
-    osVersion: '10',
-    browserName: 'Chrome',
-    browserVersion: '110.0'
-  },
-  {
-    osName: 'Windows',
-    osVersion: '11',
-    browserName: 'Chrome',
-    browserVersion: '108.0'
-  },
-  {
-    osName: 'OS X',
-    osVersion: 'Monterey',
-    browserName: 'Chrome',
-    browserVersion: '108.0'
+    osName: 'Linux',
+    osVersion: '5.15.0-50-generic',
+    browserName: 'chrome',
+    browserVersion: '110'
   }
 ];
 
@@ -193,20 +169,20 @@ export const closeDebugPanel = async (peerDrivers: WebDriver[]): Promise<void> =
 
 export const markSessionAsFailed = async (peerDrivers: WebDriver[]): Promise<void> => {
   log('Setting the status to failed');
-  await Promise.all(peerDrivers.map(async (peerDriver) => {
-    await peerDriver.executeScript(
-      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Some elements failed to load!"}}'
-    );
-  }));
+  // await Promise.all(peerDrivers.map(async (_peerDriver) => {
+  //  await peerDriver.executeScript(
+  //    'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Some elements failed to load!"}}'
+  //  );
+  // }));
 };
 
 export const markSessionAsPassed = async (peerDrivers: WebDriver[]): Promise<void> => {
   log('Setting the status to passed');
-  await Promise.all(peerDrivers.map(async (peerDriver) => {
-    await peerDriver.executeScript(
-      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Tests passed!"}}'
-    );
-  }));
+  // await Promise.all(peerDrivers.map(async (peerDriver) => {
+  //   await peerDriver.executeScript(
+  //     'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Tests passed!"}}'
+  //   );
+  // }));
 };
 
 export const scrollElementIntoView = async (element : webdriver.WebElement): Promise<void> => {
@@ -214,18 +190,10 @@ export const scrollElementIntoView = async (element : webdriver.WebElement): Pro
 };
 
 const _getBrowserCapabilities = (buildName: string, osBrowserCombination: any, index: number): webdriver.Capabilities => {
-  const capabilities = {
-    'bstack:options': {
-      os: osBrowserCombination.osName,
-      osVersion: osBrowserCombination.osVersion,
-      browserVersion: osBrowserCombination.browserVersion,
-      buildName,
-      sessionName: `${index}-${osBrowserCombination.osName}-${osBrowserCombination.browserName}`
-    },
-    browserName: osBrowserCombination.browserName
-  };
-
-  return new webdriver.Capabilities(new Map(Object.entries(capabilities)));
+  const _ = index;
+  const capabilities = new webdriver.Capabilities();
+  capabilities.setBrowserName('chrome');
+  return capabilities;
 };
 
 const _getCurrentDateAndTime = (): string => {
