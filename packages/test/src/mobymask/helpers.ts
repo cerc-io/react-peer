@@ -127,13 +127,13 @@ export async function testMemberEndorsements (reportSender: WebDriver, reportRec
   await closeDebugPanel(reportReceivers);
 }
 
-export async function testInvitation (invitor: WebDriver, invitee: WebDriver, tag: string): Promise<string> {
-  // Create a new invite link with given tag
+export async function testInvitation (invitor: WebDriver, invitee: WebDriver, inviteeName: string): Promise<string> {
+  // Create a new invite link for given inviteeName
   const createInviteButton = await invitor.findElement(webdriver.By.xpath(xpaths.mobyMemberCreateInvite));
   await createInviteButton.click();
 
   await invitor.wait(until.alertIsPresent(), 3 * ONE_SECOND);
-  // await invitor.switchTo().alert().sendKeys(tag);
+  // await invitor.switchTo().alert().sendKeys(inviteeName);
   await invitor.switchTo().alert().accept();
 
   // Wait for confirmation alert

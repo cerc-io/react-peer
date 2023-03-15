@@ -169,20 +169,20 @@ export const closeDebugPanel = async (peerDrivers: WebDriver[]): Promise<void> =
 
 export const markSessionAsFailed = async (peerDrivers: WebDriver[]): Promise<void> => {
   log('Setting the status to failed');
-  // await Promise.all(peerDrivers.map(async (_peerDriver) => {
-  //  await peerDriver.executeScript(
-  //    'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Some elements failed to load!"}}'
-  //  );
-  // }));
+  await Promise.all(peerDrivers.map(async (peerDriver) => {
+    await peerDriver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Some elements failed to load!"}}'
+    );
+  }));
 };
 
 export const markSessionAsPassed = async (peerDrivers: WebDriver[]): Promise<void> => {
   log('Setting the status to passed');
-  // await Promise.all(peerDrivers.map(async (peerDriver) => {
-  //   await peerDriver.executeScript(
-  //     'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Tests passed!"}}'
-  //   );
-  // }));
+  await Promise.all(peerDrivers.map(async (peerDriver) => {
+    await peerDriver.executeScript(
+      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Tests passed!"}}'
+    );
+  }));
 };
 
 export const scrollElementIntoView = async (element : webdriver.WebElement): Promise<void> => {

@@ -7,6 +7,7 @@ import * as dotenv from 'dotenv';
 import debug from 'debug';
 import 'mocha';
 import { expect } from 'chai';
+import assert from 'assert';
 import webdriver, { WebDriver } from 'selenium-webdriver';
 
 import {
@@ -14,9 +15,7 @@ import {
   sendFlood,
   getLogs,
   quitBrowsers,
-  markSessionAsFailed,
   navigateURL,
-  markSessionAsPassed,
   SCRIPT_GET_PEER_ID,
   setupBrowsers
 } from './driver-utils';
@@ -28,7 +27,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const log = debug('laconic:test');
 
-const SERVER_URL = 'http://localhost:4444';
+const SERVER_URL = process.env.SERVER_URL;
 
 interface Arguments {
   mobymask: boolean;
@@ -52,7 +51,7 @@ describe('peer-test', () => {
 
     if (testFailed) {
       // Mark the Browserstack sessions as failed
-      await markSessionAsFailed(peerDrivers);
+      // await markSessionAsFailed(peerDrivers);
 
       // Quit browser instances
       await quitBrowsers(peerDrivers);
@@ -62,7 +61,7 @@ describe('peer-test', () => {
   after(async function () {
     if (!testFailed) {
       // Mark the Browserstack sessions as passed
-      await markSessionAsPassed(peerDrivers);
+      // await markSessionAsPassed(peerDrivers);
     }
 
     // Quit browser instances
@@ -75,6 +74,7 @@ describe('peer-test', () => {
 
       // Try setting up the browsers and exit if any error is thrown
       try {
+        assert(SERVER_URL);
         peerDrivers = await setupBrowsers(SERVER_URL);
         peerIds = await Promise.all(peerDrivers.map((peerDriver): Promise<string> => {
           return peerDriver.executeScript(SCRIPT_GET_PEER_ID);
@@ -82,9 +82,10 @@ describe('peer-test', () => {
       } catch (err) {
         log('Error while setting up browsers');
 
-        // Mark the Browserstack sessions as failed
         testFailed = true;
-        await markSessionAsFailed(peerDrivers);
+
+        // Mark the Browserstack sessions as failed
+        // await markSessionAsFailed(peerDrivers);
 
         throw (err);
       }
