@@ -75,6 +75,8 @@ describe('peer-test', () => {
       // Try setting up the browsers and exit if any error is thrown
       try {
         assert(SERVER_URL);
+        log('Testing on selenium grid at:', SERVER_URL);
+
         peerDrivers = await setupBrowsers(SERVER_URL);
         peerIds = await Promise.all(peerDrivers.map((peerDriver): Promise<string> => {
           return peerDriver.executeScript(SCRIPT_GET_PEER_ID);
