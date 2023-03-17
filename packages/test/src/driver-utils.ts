@@ -201,6 +201,8 @@ export const closeDebugPanel = async (peerDrivers: WebDriver[]): Promise<void> =
   }));
 };
 
+// Browserstack has custom JavascriptExecutor methods which makes it possible to set session status
+// Refer : https://www.browserstack.com/docs/automate/selenium/set-name-and-status-of-test
 export const markSessionAsFailed = async (peerDrivers: WebDriver[]): Promise<void> => {
   log('Setting the status to failed');
   await Promise.all(peerDrivers.map(async (peerDriver) => {
