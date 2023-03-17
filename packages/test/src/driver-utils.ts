@@ -40,7 +40,7 @@ window.peer.subscribeTopic('mobymask', (peerId, data) => {
   }
 });`;
 
-const osBrowserCombinations = [
+const seleniumOsBrowserCombinations = [
   {
     osName: 'Linux',
     osVersion: '5.15.0-50-generic',
@@ -49,14 +49,48 @@ const osBrowserCombinations = [
   }
 ];
 
-export async function setupBrowsers (serverURL: string): Promise<WebDriver[]> {
+const BStackOsBrowserCombinations = [
+  {
+    osName: 'Windows',
+    osVersion: '11',
+    browserName: 'Chrome',
+    browserVersion: '110.0'
+  },
+  {
+    osName: 'OS X',
+    osVersion: 'Monterey',
+    browserName: 'Chrome',
+    browserVersion: '110.0'
+  },
+  {
+    osName: 'Windows',
+    osVersion: '10',
+    browserName: 'Chrome',
+    browserVersion: '110.0'
+  },
+  {
+    osName: 'Windows',
+    osVersion: '11',
+    browserName: 'Chrome',
+    browserVersion: '108.0'
+  },
+  {
+    osName: 'OS X',
+    osVersion: 'Monterey',
+    browserName: 'Chrome',
+    browserVersion: '108.0'
+  }
+];
+
+export async function setupBrowsers (serverURL: string, USE_BSTACK_GRID: boolean): Promise<WebDriver[]> {
   let peerDrivers: WebDriver[] = [];
   const buildName = `Build-${_getCurrentDateAndTime()}`;
+  const usableOsBrowserCombinations = USE_BSTACK_GRID ? BStackOsBrowserCombinations : seleniumOsBrowserCombinations;
 
   try {
     const peerDriverPromises: Promise<ThenableWebDriver>[] = [];
     for (let i = 0; i < TOTAL_PEERS; i++) {
-      const capabilities = _getBrowserCapabilities(buildName, osBrowserCombinations[i % osBrowserCombinations.length], i);
+      const capabilities = _getBrowserCapabilities(buildName, usableOsBrowserCombinations[i % usableOsBrowserCombinations.length], i);
       peerDriverPromises.push(startABrowserPeer(serverURL, capabilities));
     }
 
@@ -190,10 +224,18 @@ export const scrollElementIntoView = async (element : webdriver.WebElement): Pro
 };
 
 const _getBrowserCapabilities = (buildName: string, osBrowserCombination: any, index: number): webdriver.Capabilities => {
-  const _ = index;
-  const capabilities = new webdriver.Capabilities();
-  capabilities.setBrowserName('chrome');
-  return capabilities;
+  const capabilities = {
+    'bstack:options': {
+      os: osBrowserCombination.osName,
+      osVersion: osBrowserCombination.osVersion,
+      browserVersion: osBrowserCombination.browserVersion,
+      buildName,
+      sessionName: `${index}-${osBrowserCombination.osName}-${osBrowserCombination.browserName}`
+    },
+    browserName: osBrowserCombination.browserName
+  };
+
+  return new webdriver.Capabilities(new Map(Object.entries(capabilities)));
 };
 
 const _getCurrentDateAndTime = (): string => {

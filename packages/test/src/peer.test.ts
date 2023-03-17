@@ -17,7 +17,9 @@ import {
   quitBrowsers,
   navigateURL,
   SCRIPT_GET_PEER_ID,
-  setupBrowsers
+  setupBrowsers,
+  markSessionAsFailed,
+  markSessionAsPassed
 } from './driver-utils';
 import { FLOOD_CHECK_DELAY } from './constants';
 import { testInvitation, testInviteRevocation, testMemberEndorsements, testPhisherReports } from './mobymask/helpers';
@@ -27,7 +29,12 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const log = debug('laconic:test');
 
-const SERVER_URL = process.env.SERVER_URL;
+const USE_BSTACK_GRID: boolean = (process.env.USE_BSTACK_GRID?.toLowerCase() === 'true');
+
+const SELENIUM_GRID_URL = process.env.SELENIUM_GRID_URL;
+const BSTACK_GRID_URL = `http://${process.env.BSTACK_USERNAME}:${process.env.BSTACK_ACCESS_KEY}@hub-cloud.browserstack.com/wd/hub`;
+
+const SERVER_URL = USE_BSTACK_GRID ? BSTACK_GRID_URL : SELENIUM_GRID_URL;
 
 interface Arguments {
   mobymask: boolean;
@@ -51,8 +58,9 @@ describe('peer-test', () => {
 
     if (testFailed) {
       // Mark the Browserstack sessions as failed
-      // await markSessionAsFailed(peerDrivers);
-
+      if (USE_BSTACK_GRID) {
+        await markSessionAsFailed(peerDrivers);
+      }
       // Quit browser instances
       await quitBrowsers(peerDrivers);
     }
@@ -61,7 +69,9 @@ describe('peer-test', () => {
   after(async function () {
     if (!testFailed) {
       // Mark the Browserstack sessions as passed
-      // await markSessionAsPassed(peerDrivers);
+      if (USE_BSTACK_GRID) {
+        await markSessionAsPassed(peerDrivers);
+      }
     }
 
     // Quit browser instances
@@ -77,7 +87,7 @@ describe('peer-test', () => {
         assert(SERVER_URL);
         log('Testing on selenium grid at:', SERVER_URL);
 
-        peerDrivers = await setupBrowsers(SERVER_URL);
+        peerDrivers = await setupBrowsers(SERVER_URL, USE_BSTACK_GRID);
         peerIds = await Promise.all(peerDrivers.map((peerDriver): Promise<string> => {
           return peerDriver.executeScript(SCRIPT_GET_PEER_ID);
         }));
@@ -87,8 +97,9 @@ describe('peer-test', () => {
         testFailed = true;
 
         // Mark the Browserstack sessions as failed
-        // await markSessionAsFailed(peerDrivers);
-
+        if (USE_BSTACK_GRID) {
+          await markSessionAsFailed(peerDrivers);
+        }
         throw (err);
       }
 

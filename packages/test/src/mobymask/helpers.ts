@@ -132,12 +132,12 @@ export async function testInvitation (invitor: WebDriver, invitee: WebDriver, in
   const createInviteButton = await invitor.findElement(webdriver.By.xpath(xpaths.mobyMemberCreateInvite));
   await createInviteButton.click();
 
-  await invitor.wait(until.alertIsPresent(), 3 * 1000); // 3s
-  // await invitor.switchTo().alert().sendKeys(inviteeName);
+  await invitor.wait(until.alertIsPresent(), 5 * 1000); // 5s
+  await invitor.switchTo().alert().sendKeys(inviteeName);
   await invitor.switchTo().alert().accept();
 
   // Wait for confirmation alert
-  await invitor.wait(until.alertIsPresent(), 3 * 1000); // 3s
+  await invitor.wait(until.alertIsPresent(), 5 * 1000); // 5s
   await invitor.switchTo().alert().accept();
 
   // Click on the dropdown to make links visible
