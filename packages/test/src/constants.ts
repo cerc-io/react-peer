@@ -15,3 +15,6 @@ export const MESSAGE_ARRIVAL_TIMEOUT = 10 * 1000; // 10ss
 
 // Time to wait for flood messages to be received
 export const MESSAGE_CHECK_TIMEOUT = 30 * 1000; // 30s
+
+// Time within which alert should pe present
+export const ALERT_TIMEOUT = 30 * 1000; // 30s

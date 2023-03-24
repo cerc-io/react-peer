@@ -8,7 +8,7 @@ import {
   MOBYMASK_MESSAGE_KINDS,
   getSignedDelegationFromInvite
 } from './utils';
-import { MESSAGE_ARRIVAL_TIMEOUT } from '../constants';
+import { ALERT_TIMEOUT, MESSAGE_ARRIVAL_TIMEOUT } from '../constants';
 import xpaths from './elements-xpaths.json';
 import { closeDebugPanel, navigateURL, openDebugPanel, scrollElementIntoView, waitForMessage } from '../driver-utils';
 
@@ -132,12 +132,12 @@ export async function testInvitation (invitor: WebDriver, invitee: WebDriver, in
   const createInviteButton = await invitor.findElement(webdriver.By.xpath(xpaths.mobyMemberCreateInvite));
   await createInviteButton.click();
 
-  await invitor.wait(until.alertIsPresent(), 5 * 1000); // 5s
+  await invitor.wait(until.alertIsPresent(), ALERT_TIMEOUT, 'Invitation alert should appear within timeout', 1000);
   await invitor.switchTo().alert().sendKeys(inviteeName);
   await invitor.switchTo().alert().accept();
 
   // Wait for confirmation alert
-  await invitor.wait(until.alertIsPresent(), 5 * 1000); // 5s
+  await invitor.wait(until.alertIsPresent(), ALERT_TIMEOUT, 'Confirmation alert should appear within timeout', 1000);
   await invitor.switchTo().alert().accept();
 
   // Click on the dropdown to make links visible
