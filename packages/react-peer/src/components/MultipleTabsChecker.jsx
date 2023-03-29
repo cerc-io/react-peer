@@ -21,14 +21,10 @@ export function MultipleTabsChecker ({ children }) {
     }
   }, []);
 
-  const handleRefresh = useCallback(() => {
+  const handleForceReload = useCallback(() => {
+    localStorage.removeItem('tabsOpen');
     window.location.reload();
   }, []);
-
-  const handleClear = useCallback(() => {
-    localStorage.removeItem('tabsOpen');
-    handleRefresh();
-  }, [handleRefresh]);
 
   return (
     <>
@@ -38,14 +34,13 @@ export function MultipleTabsChecker ({ children }) {
       >
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            App is open in another window. Close old window and click on "REFRESH".
-            <br/>
-            Click on "CLEAR STORAGE" if closing old window doesn't work.
+            App is already open in another window. Close this window.
+            <br />
+            (If you're sure it's not loaded in another window, click "Force reload")
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button variant="outlined" onClick={handleClear}>CLEAR STORAGE</Button>
-          <Button variant="contained" onClick={handleRefresh}>REFRESH</Button>
+          <Button onClick={handleForceReload}>FORCE RELOAD</Button>
         </DialogActions>
       </Dialog>
       { !dialogOpen && children }
