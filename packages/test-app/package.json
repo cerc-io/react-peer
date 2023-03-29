@@ -3,7 +3,7 @@
   "version": "0.2.29",
   "private": true,
   "dependencies": {
-    "@cerc-io/peer": "^0.2.31",
+    "@cerc-io/peer": "^0.2.34",
     "@cerc-io/react-peer": "^0.2.29",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
