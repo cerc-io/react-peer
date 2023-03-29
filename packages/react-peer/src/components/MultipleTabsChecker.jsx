@@ -12,18 +12,23 @@ export function MultipleTabsChecker ({ children }) {
 
     if (!tabsOpen) {
       // Set tabOpens true if no other tabs are open
-      localStorage.setItem('tabsOpen', true)
+      localStorage.setItem('tabsOpen', true);
 
       // On closing of window set tabsOpen to false
       window.onunload = () => {
-        localStorage.removeItem('tabsOpen')
+        localStorage.removeItem('tabsOpen');
       }
     }
   }, []);
 
   const handleRefresh = useCallback(() => {
     window.location.reload();
-  });
+  }, []);
+
+  const handleClear = useCallback(() => {
+    localStorage.removeItem('tabsOpen');
+    handleRefresh();
+  }, [handleRefresh]);
 
   return (
     <>
@@ -34,10 +39,13 @@ export function MultipleTabsChecker ({ children }) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             App is open in another window. Close old window and click on "REFRESH".
+            <br/>
+            Click on "CLEAR STORAGE" if closing old window doesn't work.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleRefresh}>REFRESH</Button>
+          <Button variant="outlined" onClick={handleClear}>CLEAR STORAGE</Button>
+          <Button variant="contained" onClick={handleRefresh}>REFRESH</Button>
         </DialogActions>
       </Dialog>
       { !dialogOpen && children }
