@@ -1,0 +1,6 @@
+{
+  "relayNodes": "MOBYMASK_HOSTED_CONFIG_relayNodes",
+  "peer": {
+    "enableDebugInfo": true
+  }
+}

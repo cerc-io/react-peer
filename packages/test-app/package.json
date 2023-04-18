@@ -1,10 +1,12 @@
 {
   "name": "@cerc-io/test-app",
-  "version": "0.2.31",
-  "private": true,
+  "version": "0.2.32",
+  "files": [
+    "build/*"
+  ],
   "dependencies": {
     "@cerc-io/peer": "^0.2.34",
-    "@cerc-io/react-peer": "^0.2.31",
+    "@cerc-io/react-peer": "^0.2.32",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/material": "^5.11.3",
@@ -29,7 +31,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
-    "serve": "serve -s build"
+    "serve": "serve -s build",
+    "prepublishOnly": "cp src/config.hosted.json src/config.json && yarn build"
   },
   "eslintConfig": {
     "extends": [
