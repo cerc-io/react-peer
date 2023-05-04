@@ -5,7 +5,7 @@
     "build/*"
   ],
   "dependencies": {
-    "@cerc-io/peer": "^0.2.39",
+    "@cerc-io/peer": "^0.2.41",
     "@cerc-io/react-peer": "^0.2.33",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
