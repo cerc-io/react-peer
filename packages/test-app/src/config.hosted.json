@@ -1,6 +1,7 @@
 {
   "relayNodes": "MOBYMASK_HOSTED_CONFIG_relayNodes",
   "peer": {
+    "denyMultiaddrs": "MOBYMASK_HOSTED_CONFIG_denyMultiaddrs",
     "enableDebugInfo": true
   }
 }
