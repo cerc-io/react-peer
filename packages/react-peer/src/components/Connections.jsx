@@ -1,12 +1,12 @@
 import React, { useContext, useEffect } from 'react';
 
-import { getPseudonymForPeerId } from '@cerc-io/peer';
 import { Box, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 
 import { useForceUpdate } from '../hooks/forceUpdate';
 import { PeerContext } from '../context/PeerContext';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import { useThrottledCallback } from '../hooks/throttledCallback';
+import { getPeerConnectionsInfo, getPseudonymForPeerId } from '../utils';
 
 const STYLES = {
   connectionsTable: {
@@ -17,26 +17,27 @@ const STYLES = {
   }
 }
 
-export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
-  const peer = useContext(PeerContext);
+export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, node, ...props }) {
   const forceUpdate = useForceUpdate();
 
   // Set leading false to render UI after the events have triggered
   const throttledForceUpdate = useThrottledCallback(forceUpdate, THROTTLE_WAIT_TIME, { leading: false });
 
+  // TODO Store latency data map as part of the state
+
   useEffect(() => {
-    if (!peer || !peer.node) {
+    if (!node) {
       return;
     }
 
-    peer.node.addEventListener('peer:connect', throttledForceUpdate);
-    peer.node.addEventListener('peer:disconnect', throttledForceUpdate);
+    node.addEventListener('peer:connect', throttledForceUpdate);
+    node.addEventListener('peer:disconnect', throttledForceUpdate);
 
     return () => {
-      peer.node?.removeEventListener('peer:connect', throttledForceUpdate);
-      peer.node?.removeEventListener('peer:disconnect', throttledForceUpdate);
+      node.removeEventListener('peer:connect', throttledForceUpdate);
+      node.removeEventListener('peer:disconnect', throttledForceUpdate);
     }
-  }, [peer, throttledForceUpdate])
+  }, [node, throttledForceUpdate])
 
   useEffect(() => {
     // TODO: Add event for connection close and remove refresh in interval
@@ -53,10 +54,11 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
         <b>
           Remote Peer Connections
           &nbsp;
-          <Chip size="small" label={peer?.node.getConnections().length ?? 0} variant="outlined" />
+          <Chip size="small" label={node?.getConnections().length ?? 0} variant="outlined" />
         </b>
       </Typography>
-      {peer && peer.getPeerConnectionsInfo().map(connection => (
+      {/* TODO: Use inbuilt getPeerConnectionsInfo from libp2p node */}
+      {node && getPeerConnectionsInfo(node).map(connection => (
         <TableContainer sx={STYLES.connectionsTable} key={connection.id} component={Paper}>
           <Table size="small">
             <TableBody>
@@ -76,9 +78,7 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
                 <TableCell align="right"><b>Node type</b></TableCell>
                 <TableCell>
                   {
-                    connection.isPeerRelay
-                      ? connection.isPeerRelayPrimary ? "Relay (Primary)" : "Relay (Secondary)"
-                      : "Peer"
+                    connection.isPeerRelay ? "Relay" : "Peer"
                   }
                 </TableCell>
                 <TableCell size="small" align="right"><b>Latency (ms)</b></TableCell>

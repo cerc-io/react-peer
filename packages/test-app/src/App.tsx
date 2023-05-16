@@ -108,7 +108,7 @@ function App() {
           </Card>
           <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
-              <Connections />
+              <Connections node={peer?.node} />
             </CardContent>
           </Card>
           <Card sx={STYLES.debugCard} raised>

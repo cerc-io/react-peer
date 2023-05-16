@@ -3,6 +3,7 @@
   "version": "0.2.34",
   "description": "react-peer React component",
   "main": "lib/index.js",
+  "module": "es/index.js",
   "files": [
     "css",
     "es",
@@ -24,6 +25,7 @@
     "convert": "^4.10.0",
     "d3": "^5.5.0",
     "lodash": "^4.17.21",
+    "unique-names-generator": "^4.7.1",
     "use-resize-observer": "^9.1.0"
   },
   "peerDependencies": {

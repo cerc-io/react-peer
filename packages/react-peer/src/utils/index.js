@@ -1,4 +1,10 @@
-import { getPseudonymForPeerId } from '@cerc-io/peer';
+import assert from 'assert';
+import { uniqueNamesGenerator, adjectives, colors, names } from 'unique-names-generator';
+
+import { multiaddr } from '@multiformats/multiaddr';
+
+const P2P_WEBRTC_STAR_ID = 'p2p-webrtc-star';
+const P2P_CIRCUIT_ID = 'p2p-circuit';
 
 const GRAPH_NODE_COLOR = {
   blue: 0,
@@ -25,10 +31,10 @@ export const updateGraphDataWithDebugInfo = (selfPeer, debugInfo, nodesMap = new
 
     // Set existing node properties
     ...nodesMap.get(selfInfo.peerId),
-    
+
     id: selfInfo.peerId,
     pseudonym: getPseudonymForPeerId(selfInfo.peerId),
-    
+
     // Override multiaddrs from selfInfo
     multiaddrs: selfInfo.multiaddrs,
 
@@ -85,4 +91,67 @@ export const updateGraphDataWithDebugInfo = (selfPeer, debugInfo, nodesMap = new
     nodesMap,
     linksMap
   }
+}
+
+/**
+ * Get a deterministic pseudonym of form [adjective-color-name] for a given libp2p peer id
+ * Eg. 12D3KooWJLXEX2GfHPSZR3z9QKNSN8EY6pXo7FZ9XtFhiKLJATtC -> jolly-green-diann
+ * @param peerId
+ */
+export const getPseudonymForPeerId = (peerId) => {
+  return uniqueNamesGenerator({
+    seed: peerId,
+    dictionaries: [adjectives, colors, names],
+    length: 3,
+    style: 'lowerCase',
+    separator: '-'
+  });
+};
+
+export const getPeerConnectionsInfo = (node) => {
+  assert(node);
+  const connectionsInfo = getConnectionsInfo(node);
+
+  return connectionsInfo.map(connectionInfo => {
+    const peerConnectionInfo = {
+      ...connectionInfo,
+      isPeerRelay: isRelayPeerMultiaddr(connectionInfo.multiaddr),
+      // TODO Check if node is primary relay
+      // isPeerRelayPrimary: this.isPrimaryRelay(connectionInfo.multiaddr)
+    };
+
+
+    if (peerConnectionInfo.type === 'relayed') {
+      peerConnectionInfo.hopRelayPeerId = multiaddr(peerConnectionInfo.multiaddr).decapsulate('p2p-circuit/p2p').getPeerId();
+    }
+
+    return peerConnectionInfo;
+  });
+}
+
+/**
+ * Method to get connections info
+ * @param node
+ * @returns
+ */
+const getConnectionsInfo = (node) => {
+  return node.getConnections().map(connection => {
+    return {
+      id: connection.id,
+      peerId: connection.remotePeer.toString(),
+      multiaddr: connection.remoteAddr.toString(),
+      direction: connection.stat.direction,
+      status: connection.stat.status,
+      // TODO Use enums when switching to TS
+      type: connection.remoteAddr.toString().includes('p2p-circuit/p2p') ? 'relayed' : 'direct',
+      // TODO Implement latency tracker to get latency values
+      // latency: peerHeartbeatChecker.getLatencyData(connection.remotePeer)
+      latency: []
+    };
+  });
+};
+
+const isRelayPeerMultiaddr = (multiaddrString) => {
+  // Multiaddr not having p2p-circuit id or webrtc-star id is of a relay node
+  return !(multiaddrString.includes(P2P_CIRCUIT_ID) || multiaddrString.includes(P2P_WEBRTC_STAR_ID));
 }
