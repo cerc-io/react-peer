@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@cerc-io/peer": "^0.2.41",
+    "@cerc-io/react-libp2p-debug": "^0.2.34",
     "@mui/lab": "^5.0.0-alpha.121",
     "@mui/material": "^5.11.3",
     "convert": "^4.10.0",

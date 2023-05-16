@@ -1,13 +1,15 @@
 import React, { useContext, useEffect } from 'react';
+
 import {
   PeerContext,
   Metrics,
-  SelfInfo,
-  Connections,
   NetworkGraph,
   PeersGraph
 } from '@cerc-io/react-peer'
-
+import {
+  SelfInfo,
+  Connections,
+} from '@cerc-io/react-libp2p-debug'
 import { getPseudonymForPeerId, Peer } from '@cerc-io/peer';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AppBar, Box, Card, CardContent, CssBaseline, Toolbar, Typography } from '@mui/material';

@@ -12,9 +12,11 @@ import BugReportIcon from '@mui/icons-material/BugReport';
 import CloseIcon from '@mui/icons-material/Close';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 // TODO: Port over to react-libp2p-debug package and use with libp2p instance
-import { SelfInfo, Connections, PeersGraph } from "@cerc-io/react-peer";
+import { PeersGraph } from "@cerc-io/react-peer";
 
 import { TabPanel } from './TabPanel';
+import { SelfInfo } from "./SelfInfo";
+import { Connections } from "./Connections";
 
 const RESIZE_THROTTLE_TIME = 500; // ms
 const TAB_HEADER_HEIGHT = 40;
@@ -74,7 +76,7 @@ const theme = createTheme({
   },
 });
 
-export function DebugPanel({ relayNodes }) {
+export function DebugPanel({ node, relayNodes, primaryRelayMultiaddr }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [value, setValue] = React.useState('1');
   const [graphContainerHeight, setGraphContainerHeight] = React.useState((window.innerHeight / 2) - TAB_HEADER_HEIGHT)
@@ -130,11 +132,23 @@ export function DebugPanel({ relayNodes }) {
               </TabList>
             </Box>
             <TabPanel sx={STYLES.tabPanel} value="1">
-              <SelfInfo sx={STYLES.selfInfo} relayNodes={relayNodes ?? []}/>
-              <Connections />
+              <SelfInfo
+                sx={STYLES.selfInfo}
+                relayNodes={relayNodes ?? []}
+                node={node}
+                primaryRelayMultiaddr={primaryRelayMultiaddr}
+              />
+              <Connections
+                node={node}
+                primaryRelayMultiaddr={primaryRelayMultiaddr}
+              />
             </TabPanel>
             <TabPanel sx={STYLES.tabPanel} value="2">
-              <PeersGraph containerHeight={graphContainerHeight}/>
+              <PeersGraph
+                node={node}
+                primaryRelayMultiaddr={primaryRelayMultiaddr}
+                containerHeight={graphContainerHeight}
+              />
             </TabPanel>
           </TabContext>
         </Paper>

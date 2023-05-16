@@ -1,9 +1,8 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { Box, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 
 import { useForceUpdate } from '../hooks/forceUpdate';
-import { PeerContext } from '../context/PeerContext';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import { useThrottledCallback } from '../hooks/throttledCallback';
 import { getPeerConnectionsInfo, getPseudonymForPeerId } from '../utils';
@@ -34,8 +33,8 @@ export function Connections ({ node, primaryRelayMultiaddr, refreshInterval = DE
     node.addEventListener('peer:disconnect', throttledForceUpdate);
 
     return () => {
-      node?.removeEventListener('peer:connect', throttledForceUpdate);
-      node?.removeEventListener('peer:disconnect', throttledForceUpdate);
+      node.removeEventListener('peer:connect', throttledForceUpdate);
+      node.removeEventListener('peer:disconnect', throttledForceUpdate);
     }
   }, [node, throttledForceUpdate])
 

@@ -7,6 +7,7 @@
   "dependencies": {
     "@cerc-io/peer": "^0.2.41",
     "@cerc-io/react-peer": "^0.2.34",
+    "@cerc-io/react-libp2p-debug": "^0.2.34",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/material": "^5.11.3",

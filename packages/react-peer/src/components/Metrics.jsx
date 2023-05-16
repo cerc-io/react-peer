@@ -2,14 +2,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import convert from 'convert';
 
 import { Box, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { DEFAULT_REFRESH_INTERVAL } from '@cerc-io/react-libp2p-debug';
 
 import LabelledMetrics from './LabelledMetrics';
 import { PeerContext } from '../context/PeerContext';
-import { DEFAULT_REFRESH_INTERVAL } from '../constants';
 
 const dataValueModifier = (value) => {
   const { quantity, unit } = convert(value, 'bytes').to('best')
-    
+
   return quantity.toLocaleString(
       undefined,
       {
@@ -133,7 +133,7 @@ export function Metrics({ refreshInterval = DEFAULT_REFRESH_INTERVAL }) {
           {
             LABELLED_METRICS.map(({ name, title, labelDisplay, valueModifier }) => {
               const data = metricsData?.get(name);
-              
+
               if (!data || !data.instance.collect().length) {
                 return null;
               }
