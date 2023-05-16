@@ -16,6 +16,7 @@
     "@types/node": "^20.1.5",
     "@typescript-eslint/eslint-plugin": "^5.47.1",
     "@typescript-eslint/parser": "^5.47.1",
+    "@cerc-io/libp2p": "0.42.2-laconic-0.1.3",
     "eslint": "^8.35.0",
     "eslint-config-semistandard": "^15.0.1",
     "eslint-config-standard": "^16.0.3",
@@ -29,6 +30,7 @@
     "@libp2p/interface-connection": "^5.0.2",
     "@multiformats/multiaddr": "^11.1.4",
     "assert": "^2.0.0",
-    "libp2p": "^0.45.0"
+    "libp2p": "^0.45.0",
+    "unique-names-generator": "^4.7.1"
   }
 }
