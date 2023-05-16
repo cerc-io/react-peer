@@ -1,4 +1,3 @@
-export const main = () => {
-  console.log('Libp2p utils');
-};
-
+export * from './debug-info.js';
+export * from './graph.js';
+export * from './peer-id-pseudonym.js';

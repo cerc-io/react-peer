@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
+import { getPeerConnectionsInfo, getPeerSelfInfo, updateGraphDataWithDebugInfo } from '@cerc-io/libp2p-util';
 import { Box } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 
-import { getPeerConnectionsInfo, getPeerSelfInfo, updateGraphDataWithDebugInfo } from '../utils';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import { GraphWithTooltip } from './GraphWithTooltip';
 import { useThrottledCallback } from '../hooks/throttledCallback';

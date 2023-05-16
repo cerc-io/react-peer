@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 
+import { getPeerConnectionsInfo, getPseudonymForPeerId } from '@cerc-io/libp2p-util';
 import { Box, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 
 import { useForceUpdate } from '../hooks/forceUpdate';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import { useThrottledCallback } from '../hooks/throttledCallback';
-import { getPeerConnectionsInfo, getPseudonymForPeerId } from '../utils';
 
 const STYLES = {
   connectionsTable: {

@@ -10,7 +10,8 @@ import {
   PeersGraph,
   Connections
 } from '@cerc-io/react-libp2p-debug'
-import { getPseudonymForPeerId, Peer } from '@cerc-io/peer';
+import { getPseudonymForPeerId } from '@cerc-io/libp2p-util';
+import { Peer } from '@cerc-io/peer';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AppBar, Box, Card, CardContent, CssBaseline, Toolbar, Typography } from '@mui/material';
 

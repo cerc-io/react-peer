@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
+import { getPeerSelfInfo, getPseudonymForPeerId } from '@cerc-io/libp2p-util';
 import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import { useThrottledCallback } from '../hooks/throttledCallback';
 import { CustomRelayDialog } from './CustomRelayDialog';
-import { getPeerSelfInfo, getPseudonymForPeerId } from '../utils';
 
 const STYLES = {
   selfInfoHead: {

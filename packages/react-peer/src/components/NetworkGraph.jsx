@@ -3,7 +3,8 @@ import React, { useState, useCallback, useContext, useEffect, useMemo } from 're
 import { Box } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { updateGraphDataWithDebugInfo, useThrottledCallback, GraphWithTooltip, DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '@cerc-io/react-libp2p-debug';
+import { updateGraphDataWithDebugInfo } from '@cerc-io/libp2p-util';
+import { useThrottledCallback, GraphWithTooltip, DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '@cerc-io/react-libp2p-debug';
 
 import { PeerContext } from '../context/PeerContext';
 
