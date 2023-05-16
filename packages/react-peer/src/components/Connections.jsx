@@ -17,7 +17,7 @@ const STYLES = {
   }
 }
 
-export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, node, ...props }) {
+export function Connections ({ node, primaryRelayMultiaddr, refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
   const forceUpdate = useForceUpdate();
 
   // Set leading false to render UI after the events have triggered
@@ -58,7 +58,7 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, node,
         </b>
       </Typography>
       {/* TODO: Use inbuilt getPeerConnectionsInfo from libp2p node */}
-      {node && getPeerConnectionsInfo(node).map(connection => (
+      {node && getPeerConnectionsInfo(node, primaryRelayMultiaddr).map(connection => (
         <TableContainer sx={STYLES.connectionsTable} key={connection.id} component={Paper}>
           <Table size="small">
             <TableBody>
@@ -78,7 +78,9 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, node,
                 <TableCell align="right"><b>Node type</b></TableCell>
                 <TableCell>
                   {
-                    connection.isPeerRelay ? "Relay" : "Peer"
+                    connection.isPeerRelay
+                    ? connection.isPeerRelayPrimary ? "Relay (Primary)" : "Relay (Secondary)"
+                    : "Peer"
                   }
                 </TableCell>
                 <TableCell size="small" align="right"><b>Latency (ms)</b></TableCell>

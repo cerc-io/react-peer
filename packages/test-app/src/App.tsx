@@ -97,7 +97,7 @@ function App() {
         >
           <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
-              <SelfInfo relayNodes={config.relayNodes ?? []} />
+              <SelfInfo relayNodes={config.relayNodes ?? []} node={peer?.node} primaryRelayMultiaddr={peer?.relayNodeMultiaddr} />
             </CardContent>
           </Card>
           <Card sx={STYLES.debugCard} raised>
@@ -108,7 +108,7 @@ function App() {
           </Card>
           <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
-              <Connections node={peer?.node} />
+              <Connections node={peer?.node} primaryRelayMultiaddr={peer?.relayNodeMultiaddr} />
             </CardContent>
           </Card>
           <Card sx={STYLES.debugCard} raised>

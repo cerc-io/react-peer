@@ -108,7 +108,19 @@ export const getPseudonymForPeerId = (peerId) => {
   });
 };
 
-export const getPeerConnectionsInfo = (node) => {
+export const getPeerSelfInfo = (node, primaryRelayMultiaddr) => {
+  assert(node);
+
+  const selfInfo = getSelfInfo(node);
+
+  return {
+    ...selfInfo,
+    primaryRelayMultiaddr: primaryRelayMultiaddr?.toString(),
+    primaryRelayPeerId: primaryRelayMultiaddr?.getPeerId()
+  };
+}
+
+export const getPeerConnectionsInfo = (node, primaryRelayMultiaddr) => {
   assert(node);
   const connectionsInfo = getConnectionsInfo(node);
 
@@ -116,8 +128,7 @@ export const getPeerConnectionsInfo = (node) => {
     const peerConnectionInfo = {
       ...connectionInfo,
       isPeerRelay: isRelayPeerMultiaddr(connectionInfo.multiaddr),
-      // TODO Check if node is primary relay
-      // isPeerRelayPrimary: this.isPrimaryRelay(connectionInfo.multiaddr)
+      isPeerRelayPrimary: isPrimaryRelay(connectionInfo.multiaddr, primaryRelayMultiaddr)
     };
 
 
@@ -128,6 +139,18 @@ export const getPeerConnectionsInfo = (node) => {
     return peerConnectionInfo;
   });
 }
+
+/**
+ * Method to get self node info
+ * @param node
+ * @returns
+ */
+const getSelfInfo = (node) => {
+  return {
+    peerId: node.peerId.toString(),
+    multiaddrs: node.getMultiaddrs().map(multiaddr => multiaddr.toString())
+  };
+};
 
 /**
  * Method to get connections info
@@ -154,4 +177,8 @@ const getConnectionsInfo = (node) => {
 const isRelayPeerMultiaddr = (multiaddrString) => {
   // Multiaddr not having p2p-circuit id or webrtc-star id is of a relay node
   return !(multiaddrString.includes(P2P_CIRCUIT_ID) || multiaddrString.includes(P2P_WEBRTC_STAR_ID));
+}
+
+const isPrimaryRelay = (multiaddrString, primaryRelayMultiaddr) => {
+  return multiaddrString === primaryRelayMultiaddr.toString();
 }

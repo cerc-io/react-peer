@@ -1,12 +1,11 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import { getPseudonymForPeerId } from '@cerc-io/peer';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography } from '@mui/material';
 
-import { PeerContext } from '../context/PeerContext';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import { useThrottledCallback } from '../hooks/throttledCallback';
 import { CustomRelayDialog } from './CustomRelayDialog';
+import { getPeerSelfInfo, getPseudonymForPeerId } from '../utils';
 
 const STYLES = {
   selfInfoHead: {
@@ -21,16 +20,15 @@ const STYLES = {
   }
 }
 
-export function SelfInfo ({ relayNodes, refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
-  const peer = useContext(PeerContext);
+export function SelfInfo ({ relayNodes, node, primaryRelayMultiaddr, refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
   const [selfInfo, setSelfInfo] = useState();
   const [openCustomRelayDialog, setOpenCustomRelayDialog] = useState(false);
   const [primaryRelay, setPrimaryRelay] = useState(localStorage.getItem('primaryRelay') ?? '')
   const [customRelay, setCustomRelay] = useState(localStorage.getItem('customRelay'))
 
   const updateInfo = useCallback(() => {
-    setSelfInfo(peer.getPeerSelfInfo())
-  }, [peer])
+    setSelfInfo(getPeerSelfInfo(node, primaryRelayMultiaddr))
+  }, [node, primaryRelayMultiaddr])
   const throttledUpdateInfo = useThrottledCallback(updateInfo, THROTTLE_WAIT_TIME);
 
   const handlePrimaryRelaySelectChange = useCallback(event => {
@@ -64,17 +62,17 @@ export function SelfInfo ({ relayNodes, refreshInterval = DEFAULT_REFRESH_INTERV
   }, [primaryRelay])
 
   useEffect(() => {
-    if (!peer || !peer.node) {
+    if (!node) {
       return
     }
 
-    peer.node.peerStore.addEventListener('change:multiaddrs', throttledUpdateInfo)
+    node.peerStore.addEventListener('change:multiaddrs', throttledUpdateInfo)
     throttledUpdateInfo();
 
     return () => {
-      peer.node?.peerStore.removeEventListener('change:multiaddrs', throttledUpdateInfo)
+      node.peerStore.removeEventListener('change:multiaddrs', throttledUpdateInfo)
     }
-  }, [peer, throttledUpdateInfo])
+  }, [node, throttledUpdateInfo])
 
   return (
     <Box {...props}>
@@ -139,7 +137,7 @@ export function SelfInfo ({ relayNodes, refreshInterval = DEFAULT_REFRESH_INTERV
               <TableCell size="small"><b>Peer ID</b></TableCell>
               <TableCell size="small">{selfInfo && `${selfInfo.peerId} ( ${getPseudonymForPeerId(selfInfo.peerId)} )`}</TableCell>
               <TableCell size="small" align="right"><b>Node started</b></TableCell>
-              <TableCell size="small" sx={STYLES.nodeStartedTableCell}>{peer && peer.node && peer.node.isStarted().toString()}</TableCell>
+              <TableCell size="small" sx={STYLES.nodeStartedTableCell}>{node && node.isStarted().toString()}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell size="small"><b>Relay node</b></TableCell>
