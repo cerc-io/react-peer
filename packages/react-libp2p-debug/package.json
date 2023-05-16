@@ -25,11 +25,14 @@
   "devDependencies": {
     "nwb": "0.25.x",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@cerc-io/peer": "^0.2.41",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {
     "@mui/lab": "^5.0.0-alpha.121",
     "@mui/material": "^5.11.3",
-    "@mui/icons-material": "^5.11.3"
+    "@mui/icons-material": "^5.11.3",
+    "d3": "^5.5.0",
+    "lodash": "^4.17.21"
   },
   "author": "",
   "homepage": "",

@@ -11,12 +11,11 @@ import TabList from '@mui/lab/TabList';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import CloseIcon from '@mui/icons-material/Close';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-// TODO: Port over to react-libp2p-debug package and use with libp2p instance
-import { PeersGraph } from "@cerc-io/react-peer";
 
 import { TabPanel } from './TabPanel';
 import { SelfInfo } from "./SelfInfo";
 import { Connections } from "./Connections";
+import { PeersGraph } from "./PeersGraph";
 
 const RESIZE_THROTTLE_TIME = 500; // ms
 const TAB_HEADER_HEIGHT = 40;

@@ -3,12 +3,12 @@ import React, { useContext, useEffect } from 'react';
 import {
   PeerContext,
   Metrics,
-  NetworkGraph,
-  PeersGraph
+  NetworkGraph
 } from '@cerc-io/react-peer'
 import {
   SelfInfo,
-  Connections,
+  PeersGraph,
+  Connections
 } from '@cerc-io/react-libp2p-debug'
 import { getPseudonymForPeerId, Peer } from '@cerc-io/peer';
 import { createTheme, ThemeProvider } from '@mui/material/styles';

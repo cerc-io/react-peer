@@ -2,9 +2,10 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
 import { Box } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
-import { getPeerConnectionsInfo, getPeerSelfInfo, updateGraphDataWithDebugInfo, DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '@cerc-io/react-libp2p-debug';
 
-import GraphWithTooltip from './GraphWithTooltip';
+import { getPeerConnectionsInfo, getPeerSelfInfo, updateGraphDataWithDebugInfo } from '../utils';
+import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
+import { GraphWithTooltip } from './GraphWithTooltip';
 import { useThrottledCallback } from '../hooks/throttledCallback';
 
 export function PeersGraph ({ node, primaryRelayMultiaddr, refreshInterval = DEFAULT_REFRESH_INTERVAL, containerHeight, ...props }) {
