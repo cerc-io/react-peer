@@ -72,7 +72,7 @@ export function NetworkGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, sx, 
       }, new Map());
 
       newDebugInfos.forEach(debugInfo => {
-        ({nodesMap, linksMap} = updateGraphDataWithDebugInfo(peer, debugInfo, nodesMap, linksMap))
+        ({nodesMap, linksMap} = updateGraphDataWithDebugInfo(peer.node, peer.relayNodeMultiaddr, debugInfo, nodesMap, linksMap))
       });
 
       return {

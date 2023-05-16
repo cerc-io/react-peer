@@ -15,12 +15,12 @@ const GRAPH_NODE_COLOR = {
 
 /**
  * Method to create/update graph data with debugInfo
- * @param selfPeer
+ * @param selfPeerNode
  * @param debugInfo
  * @param nodesMap
  * @param linksMap
  */
-export const updateGraphDataWithDebugInfo = (selfPeer, debugInfo, nodesMap = new Map(), linksMap = new Map()) => {
+export const updateGraphDataWithDebugInfo = (selfPeerNode, primaryRelayMultiaddr, debugInfo, nodesMap = new Map(), linksMap = new Map()) => {
   const { selfInfo, connInfo } = debugInfo;
 
   // Update from selfInfo
@@ -39,7 +39,7 @@ export const updateGraphDataWithDebugInfo = (selfPeer, debugInfo, nodesMap = new
     multiaddrs: selfInfo.multiaddrs,
 
     // Modify self node in graph
-    ...(selfPeer.peerId.toString() === selfInfo.peerId) && { size: 14, colorIndex: GRAPH_NODE_COLOR.red, label: 'Self' }
+    ...(selfPeerNode.peerId.toString() === selfInfo.peerId) && { size: 14, colorIndex: GRAPH_NODE_COLOR.red, label: 'Self' }
   })
 
   // Update nodes from connections info
@@ -63,7 +63,7 @@ export const updateGraphDataWithDebugInfo = (selfPeer, debugInfo, nodesMap = new
       pseudonym: getPseudonymForPeerId(conn.peerId),
 
       // Modify self peer's primary relay in the graph
-      ...(conn.multiaddr === selfPeer.relayNodeMultiaddr.toString() && { colorIndex: GRAPH_NODE_COLOR.green, label: 'Relay (primary)' })
+      ...(conn.multiaddr === primaryRelayMultiaddr.toString() && { colorIndex: GRAPH_NODE_COLOR.green, label: 'Relay (primary)' })
     })
   })
 

@@ -34,8 +34,8 @@ export function Connections ({ node, primaryRelayMultiaddr, refreshInterval = DE
     node.addEventListener('peer:disconnect', throttledForceUpdate);
 
     return () => {
-      node.removeEventListener('peer:connect', throttledForceUpdate);
-      node.removeEventListener('peer:disconnect', throttledForceUpdate);
+      node?.removeEventListener('peer:connect', throttledForceUpdate);
+      node?.removeEventListener('peer:disconnect', throttledForceUpdate);
     }
   }, [node, throttledForceUpdate])
 

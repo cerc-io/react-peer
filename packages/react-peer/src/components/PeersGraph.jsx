@@ -1,25 +1,23 @@
-import React, { useState, useCallback, useContext, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
 import { Box } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 
-import { PeerContext } from '../context/PeerContext';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import GraphWithTooltip from './GraphWithTooltip';
 import { useThrottledCallback } from '../hooks/throttledCallback';
-import { updateGraphDataWithDebugInfo } from '../utils';
+import { getPeerConnectionsInfo, getPeerSelfInfo, updateGraphDataWithDebugInfo } from '../utils';
 
-export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, containerHeight, ...props }) {
-  const peer = useContext(PeerContext);
+export function PeersGraph ({ node, primaryRelayMultiaddr, refreshInterval = DEFAULT_REFRESH_INTERVAL, containerHeight, ...props }) {
   const [connections, setConnections] = useState([]);
 
   // Callback to update connections state only on some change
   const updateConnections = useCallback(() => {
-    if (!peer || !peer.node) {
+    if (!node) {
       return
     }
 
-    const newConnections = peer.getPeerConnectionsInfo();
+    const newConnections = getPeerConnectionsInfo(node, primaryRelayMultiaddr);
 
     setConnections(prevConnections => {
       // Compare and check if connections changed
@@ -30,22 +28,22 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, contai
 
       return newConnections;
     })
-  }, [peer]);
+  }, [node, primaryRelayMultiaddr]);
   const throttledUpdateConnections = useThrottledCallback(updateConnections, THROTTLE_WAIT_TIME, { leading: false });
 
   useEffect(() => {
-    if (!peer || !peer.node) {
+    if (!node) {
       return
     }
 
-    peer.node.addEventListener('peer:connect', throttledUpdateConnections)
-    peer.node.addEventListener('peer:disconnect', throttledUpdateConnections)
+    node.addEventListener('peer:connect', throttledUpdateConnections)
+    node.addEventListener('peer:disconnect', throttledUpdateConnections)
 
     return () => {
-      peer.node?.removeEventListener('peer:connect', throttledUpdateConnections)
-      peer.node?.removeEventListener('peer:disconnect', throttledUpdateConnections)
+      node?.removeEventListener('peer:connect', throttledUpdateConnections)
+      node?.removeEventListener('peer:disconnect', throttledUpdateConnections)
     }
-  }, [peer, throttledUpdateConnections])
+  }, [node, throttledUpdateConnections])
 
   useEffect(() => {
     // TODO: Add event for connection close and remove refresh in interval
@@ -60,7 +58,7 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, contai
   }, [throttledUpdateConnections])
 
   const data = useMemo(() => {
-    if (!peer) {
+    if (!node) {
       return {
         nodes: [],
         links: []
@@ -68,17 +66,17 @@ export function PeersGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, contai
     }
 
     const debugInfo = {
-      selfInfo: peer.getPeerSelfInfo(),
+      selfInfo: getPeerSelfInfo(node, primaryRelayMultiaddr),
       connInfo: connections
     }
 
-    const {nodesMap, linksMap} = updateGraphDataWithDebugInfo(peer, debugInfo);
+    const {nodesMap, linksMap} = updateGraphDataWithDebugInfo(node, primaryRelayMultiaddr, debugInfo);
 
     return {
       nodes: Array.from(nodesMap.values()),
       links: Array.from(linksMap.values())
     }
-  }, [peer, connections]);
+  }, [node, primaryRelayMultiaddr, connections]);
 
   return (
     <ScopedCssBaseline>
