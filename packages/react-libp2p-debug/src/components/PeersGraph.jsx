@@ -8,7 +8,14 @@ import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import { GraphWithTooltip } from './GraphWithTooltip';
 import { useThrottledCallback } from '../hooks/throttledCallback';
 
-export function PeersGraph ({ node, primaryRelayMultiaddr, refreshInterval = DEFAULT_REFRESH_INTERVAL, containerHeight, ...props }) {
+export function PeersGraph ({
+  node,
+  enablePrimaryRelaySupport,
+  primaryRelayMultiaddr,
+  refreshInterval = DEFAULT_REFRESH_INTERVAL,
+  containerHeight,
+  ...props
+}) {
   const [connections, setConnections] = useState([]);
 
   // Callback to update connections state only on some change
@@ -17,7 +24,7 @@ export function PeersGraph ({ node, primaryRelayMultiaddr, refreshInterval = DEF
       return
     }
 
-    const newConnections = getPeerConnectionsInfo(node, primaryRelayMultiaddr);
+    const newConnections = getPeerConnectionsInfo(node);
 
     setConnections(prevConnections => {
       // Compare and check if connections changed
@@ -28,7 +35,7 @@ export function PeersGraph ({ node, primaryRelayMultiaddr, refreshInterval = DEF
 
       return newConnections;
     })
-  }, [node, primaryRelayMultiaddr]);
+  }, [node]);
   const throttledUpdateConnections = useThrottledCallback(updateConnections, THROTTLE_WAIT_TIME, { leading: false });
 
   useEffect(() => {
@@ -66,17 +73,23 @@ export function PeersGraph ({ node, primaryRelayMultiaddr, refreshInterval = DEF
     }
 
     const debugInfo = {
-      selfInfo: getPeerSelfInfo(node, primaryRelayMultiaddr),
+      selfInfo: getPeerSelfInfo(node),
       connInfo: connections
     }
 
-    const {nodesMap, linksMap} = updateGraphDataWithDebugInfo(node, primaryRelayMultiaddr, debugInfo);
+    const {nodesMap, linksMap} = updateGraphDataWithDebugInfo(
+      node,
+      debugInfo,
+      {
+        primaryRelayMultiaddr: enablePrimaryRelaySupport ? primaryRelayMultiaddr : undefined
+      }
+    );
 
     return {
       nodes: Array.from(nodesMap.values()),
       links: Array.from(linksMap.values())
     }
-  }, [node, primaryRelayMultiaddr, connections]);
+  }, [node, enablePrimaryRelaySupport, primaryRelayMultiaddr, connections]);
 
   return (
     <ScopedCssBaseline>

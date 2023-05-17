@@ -4,12 +4,32 @@ import { Multiaddr } from '@multiformats/multiaddr';
 import { getPseudonymForPeerId } from './peer-id-pseudonym.js';
 import { DebugInfo, ConnectionInfo, PeerConnectionInfo, ConnectionType } from './debug-info.js';
 
-const GRAPH_NODE_COLOR = {
-  blue: 0,
-  green: 2,
-  red: 3,
-  yellow: 8
-};
+enum GRAPH_NODE_COLOR {
+  blue = 0,
+  green = 2,
+  red = 3,
+  yellow = 8
+}
+
+interface GraphNode {
+  colorIndex: GRAPH_NODE_COLOR;
+  label: string;
+  multiaddrs: string[];
+  id: string;
+  pseudonym: string;
+}
+
+interface GraphLink {
+  id: string;
+  source: string;
+  target: string;
+}
+
+interface UpdateGraphDataOptions {
+  nodesMap?: Map<string, GraphNode>;
+  linksMap?: Map<string, GraphLink>;
+  primaryRelayMultiaddr?: Multiaddr;
+}
 
 /**
  * Method to create/update graph data with debugInfo
@@ -19,7 +39,17 @@ const GRAPH_NODE_COLOR = {
  * @param nodesMap
  * @param linksMap
  */
-export const updateGraphDataWithDebugInfo = (selfPeerNode: Libp2p, primaryRelayMultiaddr: Multiaddr, debugInfo: DebugInfo, nodesMap = new Map(), linksMap = new Map()) => {
+export const updateGraphDataWithDebugInfo = (
+  selfPeerNode: Libp2p,
+  debugInfo: DebugInfo,
+  options: UpdateGraphDataOptions
+) => {
+  const { nodesMap, linksMap, primaryRelayMultiaddr } = {
+    nodesMap: new Map<string, GraphNode>(),
+    linksMap: new Map<string, GraphLink>(),
+    ...options
+  };
+
   const { selfInfo, connInfo } = debugInfo;
 
   // Update from selfInfo
@@ -43,7 +73,7 @@ export const updateGraphDataWithDebugInfo = (selfPeerNode: Libp2p, primaryRelayM
 
   // Update nodes from connections info
   connInfo.forEach((conn: ConnectionInfo | PeerConnectionInfo) => {
-    nodesMap.set(conn.peerId, {
+    const nodeData = {
       // Set node color to blue and label to Peer by default
       colorIndex: GRAPH_NODE_COLOR.blue,
       label: 'Peer',
@@ -55,15 +85,27 @@ export const updateGraphDataWithDebugInfo = (selfPeerNode: Libp2p, primaryRelayM
       // Set existing node properties
       ...nodesMap.get(conn.peerId),
 
-      // Set relay node in the graph
-      ...(('isPeerRelay' in conn) && conn.isPeerRelay && { colorIndex: GRAPH_NODE_COLOR.yellow, label: 'Relay (secondary)' }),
-
       id: conn.peerId,
-      pseudonym: getPseudonymForPeerId(conn.peerId),
+      pseudonym: getPseudonymForPeerId(conn.peerId)
+    };
 
-      // Modify self peer's primary relay in the graph
-      ...(conn.multiaddr === primaryRelayMultiaddr.toString() && { colorIndex: GRAPH_NODE_COLOR.green, label: 'Relay (primary)' })
-    });
+    // Set relay node in the graph
+    if ('isPeerRelay' in conn && conn.isPeerRelay) {
+      nodeData.colorIndex = GRAPH_NODE_COLOR.yellow;
+      nodeData.label = 'Relay';
+
+      if (primaryRelayMultiaddr) {
+        nodeData.label = 'Relay (primary)';
+
+        // Modify self peer's primary relay (if provided) in the graph
+        if (conn.multiaddr === primaryRelayMultiaddr.toString()) {
+          nodeData.colorIndex = GRAPH_NODE_COLOR.green;
+          nodeData.label = 'Relay (primary)';
+        }
+      }
+    }
+
+    nodesMap.set(conn.peerId, nodeData);
   });
 
   // Update links from connections info

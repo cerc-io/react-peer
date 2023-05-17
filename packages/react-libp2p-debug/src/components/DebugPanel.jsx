@@ -152,6 +152,7 @@ export function DebugPanel({
             <TabPanel sx={STYLES.tabPanel} value="2">
               <PeersGraph
                 node={node}
+                enablePrimaryRelaySupport={enablePrimaryRelaySupport}
                 primaryRelayMultiaddr={primaryRelayMultiaddr}
                 containerHeight={graphContainerHeight}
               />
