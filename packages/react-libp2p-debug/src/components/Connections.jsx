@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
-import { getPeerConnectionsInfo, getPseudonymForPeerId, isPrimaryRelay } from '@cerc-io/libp2p-util';
+import { PeersLatencyTracker, getPeerConnectionsInfo, getPseudonymForPeerId, isPrimaryRelay } from '@cerc-io/libp2p-util';
 import { Box, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 
 import { useForceUpdate } from '../hooks/forceUpdate';
@@ -24,11 +24,20 @@ export function Connections ({
   ...props
 }) {
   const forceUpdate = useForceUpdate();
+  const peersLatencyTrackerRef = useRef(null);
 
   // Set leading false to render UI after the events have triggered
   const throttledForceUpdate = useThrottledCallback(forceUpdate, THROTTLE_WAIT_TIME, { leading: false });
 
-  // TODO Store latency data map as part of the state
+  useEffect(() => {
+    if (node) {
+      peersLatencyTrackerRef.current = new PeersLatencyTracker(node, { pingInterval: refreshInterval });
+
+      return () => {
+        peersLatencyTrackerRef.current.destroy();
+      };
+    }
+  }, [node, refreshInterval]);
 
   useEffect(() => {
     if (!node) {
@@ -99,8 +108,7 @@ export function Connections ({
                 <TableCell size="small" align="right"><b>Latency (ms)</b></TableCell>
                 <TableCell size="small" colSpan={3}>
                   {
-                    connection.latency
-                      .map((value, index) => {
+                    peersLatencyTrackerRef.current?.getLatencyValues(connection.peerId)?.map((value, index) => {
                         return index === 0 ?
                           (<span key={index}><b>{value}</b>&nbsp;</span>) :
                           (<span key={index}>{value}&nbsp;</span>)

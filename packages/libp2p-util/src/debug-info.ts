@@ -22,7 +22,6 @@ export interface ConnectionInfo {
   multiaddr: string;
   direction: Direction;
   status: string;
-  latency: number[];
   type: ConnectionType;
 }
 
@@ -88,10 +87,7 @@ const getConnectionsInfo = (node: Libp2p): ConnectionInfo[] => {
       multiaddr: connection.remoteAddr.toString(),
       direction: connection.stat.direction,
       status: connection.stat.status,
-      type: connection.remoteAddr.toString().includes('p2p-circuit/p2p') ? ConnectionType.Relayed : ConnectionType.Direct,
-      // TODO Implement latency tracker to get latency values
-      // latency: peerHeartbeatChecker.getLatencyData(connection.remotePeer)
-      latency: []
+      type: connection.remoteAddr.toString().includes('p2p-circuit/p2p') ? ConnectionType.Relayed : ConnectionType.Direct
     };
   });
 };

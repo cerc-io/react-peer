@@ -14,7 +14,7 @@ interface PeersLatencyTrackerOptions {
 
 export class PeersLatencyTracker {
   private _node: Libp2p;
-  private _peersLatencyMap: Map<string, number[]> = new Map();
+  private _peersLatencyMap: Map<string, number[]>;
   private _intervalID: NodeJS.Timer;
   private _pingInterval: number;
 
@@ -22,6 +22,14 @@ export class PeersLatencyTracker {
     this._node = node;
     this._pingInterval = options.pingInterval ?? DEFAULT_PING_INTERVAL;
     this._addConnectionListeners();
+
+    // Create map from already connected peers
+    this._peersLatencyMap = new Map(
+      this._node
+        .getPeers()
+        .map(peerId => [peerId.toString(), []])
+    );
+
     this._intervalID = this._startLatencyTracker();
   }
 
@@ -29,9 +37,15 @@ export class PeersLatencyTracker {
     return this._peersLatencyMap.get(peerIdString);
   }
 
+  destroy () {
+    clearInterval(this._intervalID);
+    this._node.removeEventListener('peer:connect', this._handlePeerConnect);
+    this._node.removeEventListener('peer:disconnect', this._handlePeerDisconnect);
+  }
+
   _addConnectionListeners () {
-    this._node.addEventListener('peer:connect', this._handlePeerConnect);
-    this._node.addEventListener('peer:disconnect', this._handlePeerDisconnect);
+    this._node.addEventListener('peer:connect', this._handlePeerConnect.bind(this));
+    this._node.addEventListener('peer:disconnect', this._handlePeerDisconnect.bind(this));
   }
 
   _handlePeerConnect ({ detail: connection }: { detail: Connection }) {
@@ -78,9 +92,5 @@ export class PeersLatencyTracker {
         log(err?.message);
       }
     });
-  }
-
-  destroy () {
-    clearInterval(this._intervalID);
   }
 }
