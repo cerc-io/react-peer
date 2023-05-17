@@ -1,8 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+import { Libp2p } from '@cerc-io/libp2p';
+import { DebugPanel } from '@cerc-io/react-libp2p-debug';
+
 import logo from './logo.svg';
 import './App.css';
+import { initLibp2p } from './utils';
 
 function App() {
+  const [libp2pNode, setLibp2pNode] = useState<Libp2p | null>(null)
+
+  useEffect(() => {
+    initLibp2p().then(libp2p => setLibp2pNode(libp2p))
+
+    return () => {
+      if (libp2pNode) {
+        libp2pNode.stop();
+        setLibp2pNode(null);
+      }
+    }
+  }, [])
+
   return (
     <div className="App">
       <header className="App-header">
@@ -19,6 +37,7 @@ function App() {
           Learn React
         </a>
       </header>
+      <DebugPanel node={libp2pNode} />
     </div>
   );
 }

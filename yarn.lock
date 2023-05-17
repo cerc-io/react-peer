@@ -3261,6 +3261,20 @@
     npmlog "^6.0.2"
     write-file-atomic "^4.0.1"
 
+"@libp2p/bootstrap@^6.0.0":
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/@libp2p/bootstrap/-/bootstrap-6.0.3.tgz#0e91542808972ac966919d2b0a5bcdbf71144ca7"
+  integrity sha512-0/pDxBn8+rLtZfGX2PHzOVT3wBATOv4SPiKWjHMeiSfIWQI3kQ0bZDgLp+2lnG8j1JVGDtYJVpmYTpEzlVgbRA==
+  dependencies:
+    "@libp2p/interface-peer-discovery" "^1.0.1"
+    "@libp2p/interface-peer-info" "^1.0.7"
+    "@libp2p/interface-peer-store" "^1.2.2"
+    "@libp2p/interfaces" "^3.0.3"
+    "@libp2p/logger" "^2.0.1"
+    "@libp2p/peer-id" "^2.0.0"
+    "@multiformats/mafmt" "^12.0.0"
+    "@multiformats/multiaddr" "^12.0.0"
+
 "@libp2p/crypto@^1.0.0", "@libp2p/crypto@^1.0.11", "@libp2p/crypto@^1.0.4":
   version "1.0.11"
   resolved "https://registry.npmjs.org/@libp2p/crypto/-/crypto-1.0.11.tgz"
@@ -3373,6 +3387,17 @@
     "@libp2p/interface-peer-id" "^2.0.0"
     "@libp2p/interfaces" "^3.0.0"
     "@multiformats/multiaddr" "^11.0.0"
+    it-stream-types "^1.0.4"
+    uint8arraylist "^2.1.2"
+
+"@libp2p/interface-connection@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@libp2p/interface-connection/-/interface-connection-4.0.0.tgz#fcc830ca891820fac89a4c6bd4fcc2df4874f49b"
+  integrity sha512-6xx/NmEc84HX7QmsjSC3hHredQYjHv4Dkf4G27adAPf+qN+vnPxmQ7gaTnk243a0++DOFTbZ2gKX/15G2B6SRg==
+  dependencies:
+    "@libp2p/interface-peer-id" "^2.0.0"
+    "@libp2p/interfaces" "^3.0.0"
+    "@multiformats/multiaddr" "^12.0.0"
     it-stream-types "^1.0.4"
     uint8arraylist "^2.1.2"
 
@@ -3503,6 +3528,14 @@
   dependencies:
     "@libp2p/interface-peer-id" "^2.0.0"
     "@multiformats/multiaddr" "^11.0.0"
+
+"@libp2p/interface-peer-info@^1.0.7":
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/@libp2p/interface-peer-info/-/interface-peer-info-1.0.10.tgz#566026de95a0817b9e853c982b313541b7960c0b"
+  integrity sha512-HQlo8NwQjMyamCHJrnILEZz+YwEOXCB2sIIw3slIrhVUYeYlTaia1R6d9umaAeLHa255Zmdm4qGH8rJLRqhCcg==
+  dependencies:
+    "@libp2p/interface-peer-id" "^2.0.0"
+    "@multiformats/multiaddr" "^12.0.0"
 
 "@libp2p/interface-peer-routing@^1.0.0", "@libp2p/interface-peer-routing@^1.0.1":
   version "1.0.7"
@@ -3684,6 +3717,26 @@
     debug "^4.3.3"
     interface-datastore "^8.0.0"
     multiformats "^11.0.0"
+
+"@libp2p/mplex@^7.0.0":
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/@libp2p/mplex/-/mplex-7.1.7.tgz#ee14192f5e82aa3710ae4a102875278aea0bb127"
+  integrity sha512-8eJ6HUL3bM8ck0rb/NJ04+phBUVBMocxH/kuc2Nypn8RX9ezihV7srGGhG5N7muaMwJrRbYkFhIV4GH+8WTZUg==
+  dependencies:
+    "@libp2p/interface-connection" "^4.0.0"
+    "@libp2p/interface-stream-muxer" "^3.0.0"
+    "@libp2p/interfaces" "^3.2.0"
+    "@libp2p/logger" "^2.0.0"
+    abortable-iterator "^4.0.2"
+    any-signal "^4.0.1"
+    benchmark "^2.1.4"
+    it-batched-bytes "^1.0.0"
+    it-pushable "^3.1.0"
+    it-stream-types "^1.0.4"
+    rate-limiter-flexible "^2.3.9"
+    uint8arraylist "^2.1.1"
+    uint8arrays "^4.0.2"
+    varint "^6.0.0"
 
 "@libp2p/mplex@^7.1.1":
   version "7.1.1"
@@ -3960,7 +4013,7 @@
     private-ip "^3.0.0"
     uint8arraylist "^2.3.2"
 
-"@libp2p/utils@^3.0.10":
+"@libp2p/utils@^3.0.1", "@libp2p/utils@^3.0.10":
   version "3.0.11"
   resolved "https://registry.yarnpkg.com/@libp2p/utils/-/utils-3.0.11.tgz#d1611c3d7836eb32e5fc8bcc19c620e77471f44f"
   integrity sha512-d8ZQnu2o78TG7Oy4G6qFy5v/kNBtfgQjy1RpiQAEAB6AOSi1Oq8nLebrgCqSHfrtOIcj6a+G6ImYBaRE4b03CA==
@@ -3977,7 +4030,7 @@
     private-ip "^3.0.0"
     uint8arraylist "^2.3.2"
 
-"@libp2p/webrtc-peer@^2.0.2":
+"@libp2p/webrtc-peer@^2.0.0", "@libp2p/webrtc-peer@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@libp2p/webrtc-peer/-/webrtc-peer-2.0.2.tgz#71c240e34905c6c97e20fdf703cec025c745c155"
   integrity sha512-FozliUqHO1CIzrL8hPc5uT+5AGUWf5Dw3HncL9tte/CoDNVpj6O59ITIRWefssp3oIGEAIjpcebNu1d+mYfVug==
@@ -3992,6 +4045,60 @@
     p-defer "^4.0.0"
     p-event "^5.0.1"
     uint8arrays "^4.0.2"
+
+"@libp2p/webrtc-star-protocol@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@libp2p/webrtc-star-protocol/-/webrtc-star-protocol-3.0.0.tgz#0d874dbc62cbd43aacaa111261a0a7ed22c5e652"
+  integrity sha512-MavrZVQwPgyOf8ymJfzjkpFeiMkv103e4v1pmgO2/Ld0UFZWjx0CPbwpwvFcCeFMOt+O9/S3NUdxNTgkbm9gTA==
+  dependencies:
+    "@multiformats/multiaddr" "^11.0.0"
+    socket.io-client "^4.1.2"
+
+"@libp2p/webrtc-star@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@libp2p/webrtc-star/-/webrtc-star-6.0.0.tgz#79ef6c73b989d22be43f4bc95e354749cceb8d09"
+  integrity sha512-J3WJUXcMSRNOLcuxRV/oMZ2EFZYmX57G+oRSZb0jHpjnBZOcz4QXQh5+5o7sw0+M2FtJUTXs3jlCmsBAPHExew==
+  dependencies:
+    "@libp2p/interface-connection" "^3.0.1"
+    "@libp2p/interface-peer-discovery" "^1.0.0"
+    "@libp2p/interface-peer-id" "^2.0.0"
+    "@libp2p/interface-transport" "^2.0.0"
+    "@libp2p/interfaces" "^3.0.2"
+    "@libp2p/logger" "^2.0.0"
+    "@libp2p/peer-id" "^2.0.0"
+    "@libp2p/utils" "^3.0.1"
+    "@libp2p/webrtc-peer" "^2.0.0"
+    "@libp2p/webrtc-star-protocol" "^3.0.0"
+    "@multiformats/mafmt" "^11.0.2"
+    "@multiformats/multiaddr" "^11.0.0"
+    abortable-iterator "^4.0.2"
+    delay "^5.0.0"
+    err-code "^3.0.1"
+    iso-random-stream "^2.0.2"
+    multiformats "^11.0.0"
+    p-defer "^4.0.0"
+    socket.io-client "^4.1.2"
+    uint8arrays "^4.0.2"
+
+"@libp2p/websockets@^5.0.0":
+  version "5.0.10"
+  resolved "https://registry.yarnpkg.com/@libp2p/websockets/-/websockets-5.0.10.tgz#87689c083a7b7e0fa98ab30f0791094c2545f83c"
+  integrity sha512-q8aKm0rhDxZjc4TzDpB0quog4pViFnz+Ok+UbGEk3xXxHwT3QCxaDVPKMemMqN/1N3OahVvcodpcvFSuWmus+A==
+  dependencies:
+    "@libp2p/interface-connection" "^4.0.0"
+    "@libp2p/interface-transport" "^2.0.0"
+    "@libp2p/interfaces" "^3.0.3"
+    "@libp2p/logger" "^2.0.0"
+    "@libp2p/utils" "^3.0.2"
+    "@multiformats/mafmt" "^12.0.0"
+    "@multiformats/multiaddr" "^12.0.0"
+    "@multiformats/multiaddr-to-uri" "^9.0.2"
+    abortable-iterator "^4.0.2"
+    it-ws "^5.0.6"
+    p-defer "^4.0.0"
+    p-timeout "^6.0.0"
+    wherearewe "^2.0.1"
+    ws "^8.12.1"
 
 "@libp2p/websockets@^5.0.5":
   version "5.0.7"
@@ -4708,6 +4815,11 @@
   integrity sha512-OAPJUAtgeINhh/TAlUID4QTs53Njm7xzddaVlEs/SXwgtiD1tW22zAB/W1wdqfrpmikgaWQ9Fw6Ws+hsiRm5Vg==
   dependencies:
     "@sinonjs/commons" "^1.7.0"
+
+"@socket.io/component-emitter@~3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
+  integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
 "@stablelib/aead@^1.0.1":
   version "1.0.1"
@@ -6266,7 +6378,7 @@ any-signal@^3.0.0:
   resolved "https://registry.npmjs.org/any-signal/-/any-signal-3.0.1.tgz"
   integrity sha512-xgZgJtKEa9YmDqXodIgl7Fl1C8yNXr8w6gXjqK3LW4GcEiYT+6AQfJSE/8SPsEpLLmcvbv8YU+qet94UewHxqg==
 
-any-signal@^4.1.1:
+any-signal@^4.0.1, any-signal@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/any-signal/-/any-signal-4.1.1.tgz#928416c355c66899e6b2a91cad4488f0324bae03"
   integrity sha512-iADenERppdC+A2YKbOXXB2WUeABLaM6qnpZ70kZbPZ1cZMMJ7eF+3CaYm+/PhBizgkzlvssC7QuHS30oOiQYWA==
@@ -9093,7 +9205,7 @@ debug@3.2.6:
   dependencies:
     ms "^2.1.1"
 
-debug@4, debug@4.3.4, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.3, debug@^4.3.4:
+debug@4, debug@4.3.4, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.3, debug@^4.3.4, debug@~4.3.1, debug@~4.3.2:
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
   integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
@@ -9755,6 +9867,17 @@ engine.io-client@~3.5.0:
     xmlhttprequest-ssl "~1.6.2"
     yeast "0.1.2"
 
+engine.io-client@~6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/engine.io-client/-/engine.io-client-6.4.0.tgz#88cd3082609ca86d7d3c12f0e746d12db4f47c91"
+  integrity sha512-GyKPDyoEha+XZ7iEqam49vz6auPnNJ9ZBfy89f+rMMas8AuiMWOZ9PVzu8xb9ZC6rafUqiGHSCfu22ih66E+1g==
+  dependencies:
+    "@socket.io/component-emitter" "~3.1.0"
+    debug "~4.3.1"
+    engine.io-parser "~5.0.3"
+    ws "~8.11.0"
+    xmlhttprequest-ssl "~2.0.0"
+
 engine.io-parser@~2.2.0:
   version "2.2.1"
   resolved "https://registry.npmjs.org/engine.io-parser/-/engine.io-parser-2.2.1.tgz"
@@ -9765,6 +9888,11 @@ engine.io-parser@~2.2.0:
     base64-arraybuffer "0.1.4"
     blob "0.0.5"
     has-binary2 "~1.0.2"
+
+engine.io-parser@~5.0.3:
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/engine.io-parser/-/engine.io-parser-5.0.6.tgz#7811244af173e157295dec9b2718dfe42a64ef45"
+  integrity sha512-tjuoZDMAdEhVnSFleYPCtdL2GXwVTGtNjoeJd9IhIG3C1xs9uwxqRNEu5WpnDZCaozwVlK/nuQhpodhXSIMaxw==
 
 engine.io@~3.6.0:
   version "3.6.1"
@@ -19004,6 +19132,16 @@ socket.io-client@2.5.0:
     socket.io-parser "~3.3.0"
     to-array "0.1.4"
 
+socket.io-client@^4.1.2:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-client-4.6.1.tgz#80d97d5eb0feca448a0fb6d69a7b222d3d547eab"
+  integrity sha512-5UswCV6hpaRsNg5kkEHVcbBIXEYoVbMQaHJBXJCyEQ+CiFPV1NIOY0XOFWG4XR4GZcB8Kn6AsRs/9cy9TbqVMQ==
+  dependencies:
+    "@socket.io/component-emitter" "~3.1.0"
+    debug "~4.3.2"
+    engine.io-client "~6.4.0"
+    socket.io-parser "~4.2.1"
+
 socket.io-parser@~3.3.0:
   version "3.3.3"
   resolved "https://registry.npmjs.org/socket.io-parser/-/socket.io-parser-3.3.3.tgz"
@@ -19021,6 +19159,14 @@ socket.io-parser@~3.4.0:
     component-emitter "1.2.1"
     debug "~4.1.0"
     isarray "2.0.1"
+
+socket.io-parser@~4.2.1:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/socket.io-parser/-/socket.io-parser-4.2.2.tgz#1dd384019e25b7a3d374877f492ab34f2ad0d206"
+  integrity sha512-DJtziuKypFkMMHCm2uIshOYC7QaylbtzQwiMYDuCKy3OPkjLzu4B2vAhTlqipRHHzrI0NJeBAizTK7X+6m1jVw==
+  dependencies:
+    "@socket.io/component-emitter" "~3.1.0"
+    debug "~4.3.1"
 
 socket.io@^2.3.0:
   version "2.5.0"
@@ -21471,6 +21617,11 @@ ws@^8.4.2:
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.12.0.tgz#485074cc392689da78e1828a9ff23585e06cddd8"
   integrity sha512-kU62emKIdKVeEIOIKVegvqpXMSTAMLJozpHZaJNDYqBjzlSYXQGviYwN1osDLJ9av68qHd4a2oSjd7yD4pacig==
 
+ws@~8.11.0:
+  version "8.11.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.11.0.tgz#6a0d36b8edfd9f96d8b25683db2f8d7de6e8e143"
+  integrity sha512-HPG3wQd9sNQoT9xHyNCXoDUa+Xw/VevmY9FoHyQ+g+rrMn4j6FB4np7Z0OhdTgjx6MgQLK7jwSy1YecU1+4Asg==
+
 xml-name-validator@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/xml-name-validator/-/xml-name-validator-3.0.0.tgz#6ae73e06de4d8c6e47f9fb181f78d648ad457c6a"
@@ -21498,6 +21649,11 @@ xmlhttprequest-ssl@~1.6.2:
   version "1.6.3"
   resolved "https://registry.npmjs.org/xmlhttprequest-ssl/-/xmlhttprequest-ssl-1.6.3.tgz"
   integrity sha512-3XfeQE/wNkvrIktn2Kf0869fC0BN6UpydVasGIeSm2B1Llihf7/0UfZM+eCkOw3P7bP4+qPgqhm7ZoxuJtFU0Q==
+
+xmlhttprequest-ssl@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/xmlhttprequest-ssl/-/xmlhttprequest-ssl-2.0.0.tgz#91360c86b914e67f44dce769180027c0da618c67"
+  integrity sha512-QKxVRxiRACQcVuQEYFsI1hhkrMlrXHPegbbd1yn9UHOmRxY+si12nQYzri3vbzt8VdTTRviqcKxcyllFas5z2A==
 
 xsalsa20@^1.1.0:
   version "1.2.0"
