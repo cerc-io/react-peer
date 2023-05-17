@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
-import { getPeerConnectionsInfo, getPseudonymForPeerId } from '@cerc-io/libp2p-util';
+import { getPeerConnectionsInfo, getPseudonymForPeerId, isPrimaryRelay } from '@cerc-io/libp2p-util';
 import { Box, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 
 import { useForceUpdate } from '../hooks/forceUpdate';
@@ -16,7 +16,13 @@ const STYLES = {
   }
 }
 
-export function Connections ({ node, primaryRelayMultiaddr, refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
+export function Connections ({
+  node,
+  enablePrimaryRelaySupport,
+  primaryRelayMultiaddr,
+  refreshInterval = DEFAULT_REFRESH_INTERVAL,
+  ...props
+}) {
   const forceUpdate = useForceUpdate();
 
   // Set leading false to render UI after the events have triggered
@@ -47,6 +53,20 @@ export function Connections ({ node, primaryRelayMultiaddr, refreshInterval = DE
     }
   }, [throttledForceUpdate])
 
+  const getNodeType = useCallback((connection) => {
+    let nodeType = 'Peer'
+
+    if (connection.isPeerRelay) {
+      nodeType = 'Relay';
+
+      if (enablePrimaryRelaySupport) {
+        nodeType = isPrimaryRelay(connection.multiaddr, primaryRelayMultiaddr) ? nodeType.concat(' (Primary)') : nodeType.concat(' (Secondary)');
+      }
+    }
+
+    return nodeType;
+  }, [enablePrimaryRelaySupport, primaryRelayMultiaddr])
+
   return (
     <Box {...props}>
       <Typography variant="subtitle2" color="inherit" noWrap>
@@ -57,7 +77,7 @@ export function Connections ({ node, primaryRelayMultiaddr, refreshInterval = DE
         </b>
       </Typography>
       {/* TODO: Use inbuilt getPeerConnectionsInfo from libp2p node */}
-      {node && getPeerConnectionsInfo(node, primaryRelayMultiaddr).map(connection => (
+      {node && getPeerConnectionsInfo(node).map(connection => (
         <TableContainer sx={STYLES.connectionsTable} key={connection.id} component={Paper}>
           <Table size="small">
             <TableBody>
@@ -75,13 +95,7 @@ export function Connections ({ node, primaryRelayMultiaddr, refreshInterval = DE
                 <TableCell size="small" sx={STYLES.connectionsTableFirstColumn}><b>Peer ID</b></TableCell>
                 <TableCell size="small">{`${connection.peerId} ( ${getPseudonymForPeerId(connection.peerId)} )`}</TableCell>
                 <TableCell align="right"><b>Node type</b></TableCell>
-                <TableCell>
-                  {
-                    connection.isPeerRelay
-                    ? connection.isPeerRelayPrimary ? "Relay (Primary)" : "Relay (Secondary)"
-                    : "Peer"
-                  }
-                </TableCell>
+                <TableCell>{getNodeType(connection)}</TableCell>
                 <TableCell size="small" align="right"><b>Latency (ms)</b></TableCell>
                 <TableCell size="small" colSpan={3}>
                   {

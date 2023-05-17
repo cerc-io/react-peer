@@ -116,7 +116,11 @@ function App() {
           </Card>
           <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
-              <Connections node={peer?.node} primaryRelayMultiaddr={peer?.relayNodeMultiaddr} />
+              <Connections
+                node={peer?.node}
+                enablePrimaryRelaySupport
+                primaryRelayMultiaddr={peer?.relayNodeMultiaddr}
+              />
             </CardContent>
           </Card>
           <Card sx={STYLES.debugCard} raised>

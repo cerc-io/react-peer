@@ -145,6 +145,7 @@ export function DebugPanel({
               />
               <Connections
                 node={node}
+                enablePrimaryRelaySupport={enablePrimaryRelaySupport}
                 primaryRelayMultiaddr={primaryRelayMultiaddr}
               />
             </TabPanel>

@@ -28,7 +28,6 @@ export interface ConnectionInfo {
 
 export interface PeerConnectionInfo extends ConnectionInfo {
   isPeerRelay: boolean;
-  isPeerRelayPrimary: boolean;
   hopRelayPeerId?: string;
 }
 
@@ -51,15 +50,14 @@ export const getPeerSelfInfo = (node: Libp2p): SelfInfo => {
   };
 };
 
-export const getPeerConnectionsInfo = (node: Libp2p, primaryRelayMultiaddr: Multiaddr): PeerConnectionInfo[] => {
+export const getPeerConnectionsInfo = (node: Libp2p): PeerConnectionInfo[] => {
   assert(node);
   const connectionsInfo = getConnectionsInfo(node);
 
   return connectionsInfo.map(connectionInfo => {
     const peerConnectionInfo: PeerConnectionInfo = {
       ...connectionInfo,
-      isPeerRelay: isRelayPeerMultiaddr(connectionInfo.multiaddr),
-      isPeerRelayPrimary: isPrimaryRelay(connectionInfo.multiaddr, primaryRelayMultiaddr)
+      isPeerRelay: isRelayPeerMultiaddr(connectionInfo.multiaddr)
     };
 
     if (peerConnectionInfo.type === ConnectionType.Relayed) {
@@ -71,6 +69,10 @@ export const getPeerConnectionsInfo = (node: Libp2p, primaryRelayMultiaddr: Mult
 
     return peerConnectionInfo;
   });
+};
+
+export const isPrimaryRelay = (multiaddrString: string, primaryRelayMultiaddr: Multiaddr): boolean => {
+  return multiaddrString === primaryRelayMultiaddr.toString();
 };
 
 /**
@@ -97,8 +99,4 @@ const getConnectionsInfo = (node: Libp2p): ConnectionInfo[] => {
 const isRelayPeerMultiaddr = (multiaddrString: string): boolean => {
   // Multiaddr not having p2p-circuit id or webrtc-star id is of a relay node
   return !(multiaddrString.includes(P2P_CIRCUIT_ID) || multiaddrString.includes(P2P_WEBRTC_STAR_ID));
-};
-
-const isPrimaryRelay = (multiaddrString: string, primaryRelayMultiaddr: Multiaddr): boolean => {
-  return multiaddrString === primaryRelayMultiaddr.toString();
 };
