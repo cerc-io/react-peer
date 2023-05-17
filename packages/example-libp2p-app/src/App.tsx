@@ -11,11 +11,16 @@ function App() {
   const [libp2pNode, setLibp2pNode] = useState<Libp2p | null>(null)
 
   useEffect(() => {
-    initLibp2p().then(libp2p => setLibp2pNode(libp2p))
+    let node: Libp2p | null = null;
+
+    initLibp2p().then(libp2p => {
+      node = libp2p;
+      setLibp2pNode(node);
+    })
 
     return () => {
-      if (libp2pNode) {
-        libp2pNode.stop();
+      if (node) {
+        node.stop();
         setLibp2pNode(null);
       }
     }

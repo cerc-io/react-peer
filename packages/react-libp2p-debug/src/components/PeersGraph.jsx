@@ -93,7 +93,7 @@ export function PeersGraph ({
 
   return (
     <ScopedCssBaseline>
-      <Box mt={1} {...props}>
+      <Box {...props}>
         <GraphWithTooltip
           data={data}
           containerHeight={containerHeight}

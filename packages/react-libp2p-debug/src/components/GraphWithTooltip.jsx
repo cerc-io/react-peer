@@ -32,6 +32,7 @@ export function GraphWithTooltip ({ data, nodeCharge, containerHeight }) {
       />
       <Popover
         id="mouse-over-popover"
+        disableScrollLock
         sx={STYLES.popover}
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
