@@ -11,11 +11,6 @@ interface SelfInfo {
   multiaddrs: string[];
 }
 
-interface PeerSelfInfo extends SelfInfo {
-  primaryRelayMultiaddr: string;
-  primaryRelayPeerId: string | null;
-}
-
 export enum ConnectionType {
   Relayed = 'relayed',
   Direct = 'direct'
@@ -38,19 +33,21 @@ export interface PeerConnectionInfo extends ConnectionInfo {
 }
 
 export interface DebugInfo {
-  selfInfo: SelfInfo | PeerSelfInfo;
+  selfInfo: SelfInfo;
   connInfo: ConnectionInfo[] | PeerConnectionInfo[];
 }
 
-export const getPeerSelfInfo = (node: Libp2p, primaryRelayMultiaddr: Multiaddr): PeerSelfInfo => {
+/**
+ * Method to get self node info
+ * @param node
+ * @returns
+ */
+export const getPeerSelfInfo = (node: Libp2p): SelfInfo => {
   assert(node);
 
-  const selfInfo = getSelfInfo(node);
-
   return {
-    ...selfInfo,
-    primaryRelayMultiaddr: primaryRelayMultiaddr?.toString(),
-    primaryRelayPeerId: primaryRelayMultiaddr?.getPeerId()
+    peerId: node.peerId.toString(),
+    multiaddrs: node.getMultiaddrs().map(multiaddr => multiaddr.toString())
   };
 };
 
@@ -74,18 +71,6 @@ export const getPeerConnectionsInfo = (node: Libp2p, primaryRelayMultiaddr: Mult
 
     return peerConnectionInfo;
   });
-};
-
-/**
- * Method to get self node info
- * @param node
- * @returns
- */
-const getSelfInfo = (node: Libp2p): SelfInfo => {
-  return {
-    peerId: node.peerId.toString(),
-    multiaddrs: node.getMultiaddrs().map(multiaddr => multiaddr.toString())
-  };
 };
 
 /**

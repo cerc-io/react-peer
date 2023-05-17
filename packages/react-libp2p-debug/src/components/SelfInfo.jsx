@@ -20,15 +20,22 @@ const STYLES = {
   }
 }
 
-export function SelfInfo ({ relayNodes, node, primaryRelayMultiaddr, refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
+export function SelfInfo ({
+  node,
+  enablePrimaryRelaySupport = false,
+  relayNodes,
+  primaryRelayMultiaddr,
+  refreshInterval = DEFAULT_REFRESH_INTERVAL,
+  ...props
+}) {
   const [selfInfo, setSelfInfo] = useState();
   const [openCustomRelayDialog, setOpenCustomRelayDialog] = useState(false);
   const [primaryRelay, setPrimaryRelay] = useState(localStorage.getItem('primaryRelay') ?? '')
   const [customRelay, setCustomRelay] = useState(localStorage.getItem('customRelay'))
 
   const updateInfo = useCallback(() => {
-    setSelfInfo(getPeerSelfInfo(node, primaryRelayMultiaddr))
-  }, [node, primaryRelayMultiaddr])
+    setSelfInfo(getPeerSelfInfo(node))
+  }, [node])
   const throttledUpdateInfo = useThrottledCallback(updateInfo, THROTTLE_WAIT_TIME);
 
   const handlePrimaryRelaySelectChange = useCallback(event => {
@@ -83,46 +90,48 @@ export function SelfInfo ({ relayNodes, node, primaryRelayMultiaddr, refreshInte
           </Typography>
         </Grid>
         <Grid item xs />
-        <Grid item xs="auto">
-          <Box display="flex" alignItems="flex-end">
-            <FormControl variant="standard" sx={STYLES.primaryRelaySelect} size="small">
-              <InputLabel shrink id="primary-relay-label">Primary Relay</InputLabel>
-              <Select
-                displayEmpty
-                labelId="primary-relay-label"
-                id="primary-label"
-                value={primaryRelay}
-                label="Primary Relay"
-                onChange={handlePrimaryRelaySelectChange}
-              >
-                <MenuItem value="">{"<random>"}</MenuItem>
-                {relayNodes.map(relayNode => (
-                  <MenuItem
-                    value={relayNode}
-                    key={relayNode}
-                  >
-                    {relayNode.split('/')[2]}
-                  </MenuItem>
-                ))}
-                <MenuItem
-                  value={customRelay}
-                  onClick={handleCustomOptionClick}
+        {enablePrimaryRelaySupport && (
+          <Grid item xs="auto">
+            <Box display="flex" alignItems="flex-end">
+              <FormControl variant="standard" sx={STYLES.primaryRelaySelect} size="small">
+                <InputLabel shrink id="primary-relay-label">Primary Relay</InputLabel>
+                <Select
+                  displayEmpty
+                  labelId="primary-relay-label"
+                  id="primary-label"
+                  value={primaryRelay}
+                  label="Primary Relay"
+                  onChange={handlePrimaryRelaySelectChange}
                 >
-                  {"<custom>"}
-                </MenuItem>
-              </Select>
-            </FormControl>
-            <Button
-              variant="contained"
-              size="small"
-              disabled={primaryRelay === (localStorage.getItem('primaryRelay') ?? '')}
-              onClick={handlePrimaryRelayUpdate}
-              sx={STYLES.primaryRelayButton}
-            >
-              UPDATE
-            </Button>
-          </Box>
-        </Grid>
+                  <MenuItem value="">{"<random>"}</MenuItem>
+                  {relayNodes.map(relayNode => (
+                    <MenuItem
+                      value={relayNode}
+                      key={relayNode}
+                    >
+                      {relayNode.split('/')[2]}
+                    </MenuItem>
+                  ))}
+                  <MenuItem
+                    value={customRelay}
+                    onClick={handleCustomOptionClick}
+                  >
+                    {"<custom>"}
+                  </MenuItem>
+                </Select>
+              </FormControl>
+              <Button
+                variant="contained"
+                size="small"
+                disabled={primaryRelay === (localStorage.getItem('primaryRelay') ?? '')}
+                onClick={handlePrimaryRelayUpdate}
+                sx={STYLES.primaryRelayButton}
+              >
+                UPDATE
+              </Button>
+            </Box>
+          </Grid>
+        )}
       </Grid>
       <CustomRelayDialog
         open={openCustomRelayDialog}
@@ -139,10 +148,12 @@ export function SelfInfo ({ relayNodes, node, primaryRelayMultiaddr, refreshInte
               <TableCell size="small" align="right"><b>Node started</b></TableCell>
               <TableCell size="small" sx={STYLES.nodeStartedTableCell}>{node && node.isStarted().toString()}</TableCell>
             </TableRow>
-            <TableRow>
-              <TableCell size="small"><b>Relay node</b></TableCell>
-              <TableCell size="small" colSpan={3}>{selfInfo && `${selfInfo.primaryRelayMultiaddr} ( ${getPseudonymForPeerId(selfInfo.primaryRelayPeerId)} )`}</TableCell>
-            </TableRow>
+            {enablePrimaryRelaySupport && (
+              <TableRow>
+                <TableCell size="small"><b>Relay node</b></TableCell>
+                <TableCell size="small" colSpan={3}>{primaryRelayMultiaddr && `${primaryRelayMultiaddr.toString()} ( ${getPseudonymForPeerId(primaryRelayMultiaddr.getPeerId())} )`}</TableCell>
+              </TableRow>
+            )}
             <TableRow>
               <TableCell size="small"><b>Multiaddrs</b></TableCell>
               <TableCell size="small" colSpan={3}>

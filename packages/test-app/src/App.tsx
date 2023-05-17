@@ -100,7 +100,12 @@ function App() {
         >
           <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
-              <SelfInfo relayNodes={config.relayNodes ?? []} node={peer?.node} primaryRelayMultiaddr={peer?.relayNodeMultiaddr} />
+              <SelfInfo
+                enablePrimaryRelaySupport
+                relayNodes={config.relayNodes ?? []}
+                node={peer?.node}
+                primaryRelayMultiaddr={peer?.relayNodeMultiaddr}
+              />
             </CardContent>
           </Card>
           <Card sx={STYLES.debugCard} raised>

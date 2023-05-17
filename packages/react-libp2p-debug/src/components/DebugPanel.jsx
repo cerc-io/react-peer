@@ -75,7 +75,12 @@ const theme = createTheme({
   },
 });
 
-export function DebugPanel({ node, relayNodes, primaryRelayMultiaddr }) {
+export function DebugPanel({
+  node,
+  enablePrimaryRelaySupport = false,
+  relayNodes = [],
+  primaryRelayMultiaddr
+}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [value, setValue] = React.useState('1');
   const [graphContainerHeight, setGraphContainerHeight] = React.useState((window.innerHeight / 2) - TAB_HEADER_HEIGHT)
@@ -133,8 +138,9 @@ export function DebugPanel({ node, relayNodes, primaryRelayMultiaddr }) {
             <TabPanel sx={STYLES.tabPanel} value="1">
               <SelfInfo
                 sx={STYLES.selfInfo}
-                relayNodes={relayNodes ?? []}
                 node={node}
+                enablePrimaryRelaySupport={enablePrimaryRelaySupport}
+                relayNodes={relayNodes ?? []}
                 primaryRelayMultiaddr={primaryRelayMultiaddr}
               />
               <Connections
