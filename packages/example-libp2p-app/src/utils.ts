@@ -1,4 +1,5 @@
 import { createLibp2p, Libp2p } from 'libp2p';
+import { pingService } from 'libp2p/ping'
 
 import { webSockets } from '@libp2p/websockets';
 import { webRTCStar } from '@libp2p/webrtc-star';
@@ -36,7 +37,11 @@ export const initLibp2p = async (): Promise<Libp2p> => {
           '/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt'
         ]
       })
-    ]
+    ],
+    services: {
+      // Register pingService to enable latency tracking of connected peers in debug panel
+      ping: pingService(),
+    }
   })
 
   // Listen for new peers

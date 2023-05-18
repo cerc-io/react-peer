@@ -3425,7 +3425,7 @@
     it-stream-types "^2.0.1"
     uint8arraylist "^2.4.3"
 
-"@libp2p/interface-connection@^5.0.1", "@libp2p/interface-connection@^5.0.2":
+"@libp2p/interface-connection@^5.0.1":
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/@libp2p/interface-connection/-/interface-connection-5.0.2.tgz#c0c1e3f96eb7c29386729b832ecd30d56a499f66"
   integrity sha512-tMA/MaRRbXQC8/o6y0vWT/4rAuUxW3ckor7f1MR1xaH8B5jmlgGXsyl7AjptqGABJe9Y1KW6dIXSJ/V31TQm2w==
@@ -5443,11 +5443,6 @@
   version "16.18.11"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.11.tgz#cbb15c12ca7c16c85a72b6bdc4d4b01151bb3cae"
   integrity sha512-3oJbGBUWuS6ahSnEq1eN2XrCyf4YsWI8OyCvo7c64zQJNplk3mO84t53o8lfTk+2ji59g5ycfc6qQ3fdHliHuA==
-
-"@types/node@^20.1.5":
-  version "20.1.5"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.1.5.tgz#e94b604c67fc408f215fcbf3bd84d4743bf7f710"
-  integrity sha512-IvGD1CD/nego63ySR7vrAKEX3AJTcmrAN2kn+/sDNLi1Ff5kBzDeEdqWDplK+0HAEoLYej137Sk0cUU8OLOlMg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"

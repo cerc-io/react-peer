@@ -13,7 +13,6 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@types/node": "^20.1.5",
     "@typescript-eslint/eslint-plugin": "^5.47.1",
     "@typescript-eslint/parser": "^5.47.1",
     "libp2p": "^0.42.2",
@@ -27,7 +26,6 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@libp2p/interface-connection": "^5.0.2",
     "@multiformats/multiaddr": "^11.1.4",
     "assert": "^2.0.0",
     "unique-names-generator": "^4.7.1"

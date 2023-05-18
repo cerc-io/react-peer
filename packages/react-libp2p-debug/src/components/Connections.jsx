@@ -99,19 +99,25 @@ export function Connections ({
               </TableRow>
               <TableRow>
                 <TableCell size="small" sx={STYLES.connectionsTableFirstColumn}><b>Peer ID</b></TableCell>
-                <TableCell size="small">{`${connection.peerId} ( ${getPseudonymForPeerId(connection.peerId)} )`}</TableCell>
+                <TableCell size="small" colSpan={peersLatencyTrackerRef.current?.enabled ? 1 : 5}>{`${connection.peerId} ( ${getPseudonymForPeerId(connection.peerId)} )`}</TableCell>
                 <TableCell align="right"><b>Node type</b></TableCell>
                 <TableCell>{getNodeType(connection)}</TableCell>
-                <TableCell size="small" align="right"><b>Latency (ms)</b></TableCell>
-                <TableCell size="small" colSpan={3}>
-                  {
-                    peersLatencyTrackerRef.current?.getLatencyValues(connection.peerId)?.map((value, index) => {
-                        return index === 0 ?
-                          (<span key={index}><b>{value}</b>&nbsp;</span>) :
-                          (<span key={index}>{value}&nbsp;</span>)
-                      })
-                  }
-                </TableCell>
+                {
+                  peersLatencyTrackerRef.current?.enabled && (
+                    <>
+                      <TableCell size="small" align="right"><b>Latency (ms)</b></TableCell>
+                      <TableCell size="small" colSpan={3}>
+                        {
+                          peersLatencyTrackerRef.current?.getLatencyValues(connection.peerId)?.map((value, index) => {
+                              return index === 0 ?
+                                (<span key={index}><b>{value}</b>&nbsp;</span>) :
+                                (<span key={index}>{value}&nbsp;</span>)
+                            })
+                        }
+                      </TableCell>
+                    </>
+                  )
+                }
               </TableRow>
               <TableRow>
                 <TableCell size="small" sx={STYLES.connectionsTableFirstColumn}><b>Connected multiaddr</b></TableCell>

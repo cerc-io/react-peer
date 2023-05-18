@@ -37,8 +37,10 @@ export function SelfInfo ({
     }
 
     if (node.peerStore.addEventListener) {
+      // https://github.com/libp2p/js-libp2p/blob/master/doc/migrations/v0.44-v0.45.md#atomic-peer-store-methods
       node.peerStore.addEventListener('change:multiaddrs', throttledUpdateInfo)
     } else {
+      // https://github.com/libp2p/js-libp2p/blob/master/doc/migrations/v0.44-v0.45.md#selfpeerupdate
       node.addEventListener('self:peer:update', throttledUpdateInfo)
     }
 
@@ -48,7 +50,7 @@ export function SelfInfo ({
       if (node.peerStore.removeEventListener) {
         node.peerStore.removeEventListener('change:multiaddrs', throttledUpdateInfo)
       } else {
-        node.peerStore.removeEventListener('self:peer:update', throttledUpdateInfo)
+        node.removeEventListener('self:peer:update', throttledUpdateInfo)
       }
     }
   }, [node, throttledUpdateInfo])
