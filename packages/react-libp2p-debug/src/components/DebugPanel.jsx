@@ -11,6 +11,7 @@ import TabList from '@mui/lab/TabList';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import CloseIcon from '@mui/icons-material/Close';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ScopedCssBaseline } from "@mui/material";
 
 import { TabPanel } from './TabPanel';
 import { SelfInfo } from "./SelfInfo";
@@ -18,7 +19,8 @@ import { Connections } from "./Connections";
 import { PeersGraph } from "./PeersGraph";
 
 const RESIZE_THROTTLE_TIME = 500; // ms
-const TAB_HEADER_HEIGHT = 40;
+const TAB_HEADER_HEIGHT = 32;
+const TAB_PANEL_PADDING = 24;
 
 const STYLES = {
   debugFabStyle: {
@@ -75,6 +77,8 @@ const theme = createTheme({
   },
 });
 
+const calculateGraphContainerHeight = () => (window.innerHeight / 2) - (TAB_HEADER_HEIGHT + TAB_PANEL_PADDING)
+
 export function DebugPanel({
   node,
   enablePrimaryRelaySupport = false,
@@ -83,7 +87,7 @@ export function DebugPanel({
 }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [value, setValue] = React.useState('1');
-  const [graphContainerHeight, setGraphContainerHeight] = React.useState((window.innerHeight / 2) - TAB_HEADER_HEIGHT)
+  const [graphContainerHeight, setGraphContainerHeight] = React.useState(calculateGraphContainerHeight)
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -91,7 +95,7 @@ export function DebugPanel({
 
   const throttledHandleWindowResize = React.useMemo(
     () => throttle(() => {
-      setGraphContainerHeight((window.innerHeight / 2) - TAB_HEADER_HEIGHT)
+      setGraphContainerHeight(calculateGraphContainerHeight)
     }, RESIZE_THROTTLE_TIME),
     []
   );
@@ -105,74 +109,76 @@ export function DebugPanel({
   }, [throttledHandleWindowResize]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box height={Boolean(anchorEl) ? '50vh' : 0} />
-      <Popper
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        placement="top-end"
-        keepMounted
-        sx={STYLES.popper}
-        disablePortal
-      >
-        <Paper
-          variant="outlined"
-          sx={STYLES.popperPaper}
+    <ScopedCssBaseline>
+      <ThemeProvider theme={theme}>
+        <Box height={Boolean(anchorEl) ? '50vh' : 0} />
+        <Popper
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          placement="top-end"
+          keepMounted
+          sx={STYLES.popper}
+          disablePortal
         >
-          <Fab
-            onClick={() => setAnchorEl(null)}
-            sx={STYLES.closeFabStyle}
-            aria-label="close"
-            size="small"
-            data-ref="debug.close"
+          <Paper
+            variant="outlined"
+            sx={STYLES.popperPaper}
           >
-            <CloseIcon />
-          </Fab>
-          <TabContext value={value}>
-            <Box sx={STYLES.tabsBox}>
-              <TabList sx={STYLES.tabsList} onChange={handleChange} aria-label="debug panel tabs">
-                <Tab sx={STYLES.tab} label="Peers" value="1" />
-                <Tab sx={STYLES.tab} label="Graph (Peers)" value="2" />
-              </TabList>
-            </Box>
-            <TabPanel sx={STYLES.tabPanel} value="1">
-              <SelfInfo
-                sx={STYLES.selfInfo}
-                node={node}
-                enablePrimaryRelaySupport={enablePrimaryRelaySupport}
-                relayNodes={relayNodes ?? []}
-                primaryRelayMultiaddr={primaryRelayMultiaddr}
-              />
-              <Connections
-                node={node}
-                enablePrimaryRelaySupport={enablePrimaryRelaySupport}
-                primaryRelayMultiaddr={primaryRelayMultiaddr}
-              />
-            </TabPanel>
-            <TabPanel sx={STYLES.tabPanel} value="2">
-              <PeersGraph
-                node={node}
-                enablePrimaryRelaySupport={enablePrimaryRelaySupport}
-                primaryRelayMultiaddr={primaryRelayMultiaddr}
-                containerHeight={graphContainerHeight}
-              />
-            </TabPanel>
-          </TabContext>
-        </Paper>
-      </Popper>
-      <Fab
-        color="primary"
-        onClick={event => setAnchorEl(event.currentTarget)}
-        sx={{
-          ...STYLES.debugFabStyle,
-          ...(Boolean(anchorEl) ? { zIndex: 1 } : {})
-        }}
-        disabled={Boolean(anchorEl)}
-        aria-label="debug"
-        data-ref="debug.open"
-      >
-        <BugReportIcon />
-      </Fab>
-    </ThemeProvider>
+            <Fab
+              onClick={() => setAnchorEl(null)}
+              sx={STYLES.closeFabStyle}
+              aria-label="close"
+              size="small"
+              data-ref="debug.close"
+            >
+              <CloseIcon />
+            </Fab>
+            <TabContext value={value}>
+              <Box sx={STYLES.tabsBox}>
+                <TabList sx={STYLES.tabsList} onChange={handleChange} aria-label="debug panel tabs">
+                  <Tab sx={STYLES.tab} label="Peers" value="1" />
+                  <Tab sx={STYLES.tab} label="Graph (Peers)" value="2" />
+                </TabList>
+              </Box>
+              <TabPanel sx={STYLES.tabPanel} value="1">
+                <SelfInfo
+                  sx={STYLES.selfInfo}
+                  node={node}
+                  enablePrimaryRelaySupport={enablePrimaryRelaySupport}
+                  relayNodes={relayNodes ?? []}
+                  primaryRelayMultiaddr={primaryRelayMultiaddr}
+                />
+                <Connections
+                  node={node}
+                  enablePrimaryRelaySupport={enablePrimaryRelaySupport}
+                  primaryRelayMultiaddr={primaryRelayMultiaddr}
+                />
+              </TabPanel>
+              <TabPanel sx={STYLES.tabPanel} value="2">
+                <PeersGraph
+                  node={node}
+                  enablePrimaryRelaySupport={enablePrimaryRelaySupport}
+                  primaryRelayMultiaddr={primaryRelayMultiaddr}
+                  containerHeight={graphContainerHeight}
+                />
+              </TabPanel>
+            </TabContext>
+          </Paper>
+        </Popper>
+        <Fab
+          color="primary"
+          onClick={event => setAnchorEl(event.currentTarget)}
+          sx={{
+            ...STYLES.debugFabStyle,
+            ...(Boolean(anchorEl) ? { zIndex: 1 } : {})
+          }}
+          disabled={Boolean(anchorEl)}
+          aria-label="debug"
+          data-ref="debug.open"
+        >
+          <BugReportIcon />
+        </Fab>
+      </ThemeProvider>
+    </ScopedCssBaseline>
   )
 }
