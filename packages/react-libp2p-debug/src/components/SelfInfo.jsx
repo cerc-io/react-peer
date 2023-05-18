@@ -36,11 +36,20 @@ export function SelfInfo ({
       return
     }
 
-    node.peerStore.addEventListener('change:multiaddrs', throttledUpdateInfo)
+    if (node.peerStore.addEventListener) {
+      node.peerStore.addEventListener('change:multiaddrs', throttledUpdateInfo)
+    } else {
+      node.addEventListener('self:peer:update', throttledUpdateInfo)
+    }
+
     throttledUpdateInfo();
 
     return () => {
-      node.peerStore.removeEventListener('change:multiaddrs', throttledUpdateInfo)
+      if (node.peerStore.removeEventListener) {
+        node.peerStore.removeEventListener('change:multiaddrs', throttledUpdateInfo)
+      } else {
+        node.peerStore.removeEventListener('self:peer:update', throttledUpdateInfo)
+      }
     }
   }, [node, throttledUpdateInfo])
 

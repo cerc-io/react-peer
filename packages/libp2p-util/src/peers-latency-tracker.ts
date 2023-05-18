@@ -1,5 +1,6 @@
 import type { Libp2p } from 'libp2p';
 import { peerIdFromString } from '@libp2p/peer-id';
+import { PeerId } from '@libp2p/interface-peer-id';
 
 import debug from 'debug';
 
@@ -48,8 +49,8 @@ export class PeersLatencyTracker {
     this._node.addEventListener('peer:disconnect', this._handlePeerDisconnect.bind(this));
   }
 
-  _handlePeerConnect ({ detail: connection }: { detail: Connection }) {
-    const peerIdString = connection.remotePeer.toString();
+  _handlePeerConnect ({ detail }: { detail: Connection | PeerId }) {
+    const peerIdString = this._getPeerIdFromConnectionEvent(detail).toString();
 
     if (!this._peersLatencyMap.has(peerIdString)) {
       // Add peer to map if it already doesn't exist
@@ -57,9 +58,19 @@ export class PeersLatencyTracker {
     }
   }
 
-  _handlePeerDisconnect ({ detail: connection }: { detail: Connection }) {
+  _handlePeerDisconnect ({ detail }: { detail: Connection | PeerId }) {
+    const remotePeer = this._getPeerIdFromConnectionEvent(detail);
     // Remove peer as peer:disconnect event is triggered when there are no connections to a peer
-    this._peersLatencyMap.delete(connection.remotePeer.toString());
+    this._peersLatencyMap.delete(remotePeer.toString());
+  }
+
+  // https://github.com/libp2p/js-libp2p/blob/master/doc/migrations/v0.44-v0.45.md#event-changes
+  _getPeerIdFromConnectionEvent (detail: Connection | PeerId) {
+    if ('remotePeer' in detail) {
+      return detail.remotePeer;
+    }
+
+    return detail;
   }
 
   _startLatencyTracker () {
