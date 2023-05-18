@@ -37,10 +37,7 @@
     "lodash": "^4.17.21",
     "use-resize-observer": "^9.1.0"
   },
-  "author": "",
-  "homepage": "",
-  "license": "MIT",
-  "repository": "",
+  "license": "AGPL-3.0",
   "keywords": [
     "react-component"
   ]

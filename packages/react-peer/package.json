@@ -19,7 +19,7 @@
     "test:watch": "nwb test-react --server"
   },
   "dependencies": {
-    "@cerc-io/peer": "^0.2.41",
+    "@cerc-io/peer": "^0.2.43",
     "@cerc-io/libp2p-util": "^0.2.34",
     "@cerc-io/react-libp2p-debug": "^0.2.34",
     "@mui/lab": "^5.0.0-alpha.121",
@@ -37,7 +37,7 @@
   },
   "author": "",
   "homepage": "",
-  "license": "AGPL-version-3.0",
+  "license": "AGPL-3.0",
   "keywords": [
     "react-component"
   ]

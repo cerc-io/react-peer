@@ -47,8 +47,8 @@ export function PeersGraph ({
     node.addEventListener('peer:disconnect', throttledUpdateConnections)
 
     return () => {
-      node?.removeEventListener('peer:connect', throttledUpdateConnections)
-      node?.removeEventListener('peer:disconnect', throttledUpdateConnections)
+      node.removeEventListener('peer:connect', throttledUpdateConnections)
+      node.removeEventListener('peer:disconnect', throttledUpdateConnections)
     }
   }, [node, throttledUpdateConnections])
 

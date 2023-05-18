@@ -2,6 +2,7 @@
   "name": "@cerc-io/example-libp2p-app",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPL-3.0",
   "dependencies": {
     "libp2p": "^0.42.2",
     "@cerc-io/react-libp2p-debug": "^0.2.34",

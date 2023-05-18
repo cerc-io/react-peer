@@ -85,7 +85,6 @@ export function Connections ({
           <Chip size="small" label={node?.getConnections().length ?? 0} variant="outlined" />
         </b>
       </Typography>
-      {/* TODO: Use inbuilt getPeerConnectionsInfo from libp2p node */}
       {node && getPeerConnectionsInfo(node).map(connection => (
         <TableContainer sx={STYLES.connectionsTable} key={connection.id} component={Paper}>
           <Table size="small">

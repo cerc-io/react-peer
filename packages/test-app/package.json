@@ -5,7 +5,7 @@
     "build/*"
   ],
   "dependencies": {
-    "@cerc-io/peer": "^0.2.41",
+    "@cerc-io/peer": "^0.2.43",
     "@cerc-io/libp2p-util": "^0.2.34",
     "@cerc-io/react-peer": "^0.2.34",
     "@cerc-io/react-libp2p-debug": "^0.2.34",
