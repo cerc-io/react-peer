@@ -74,10 +74,7 @@ export class PeersLatencyTracker {
       try {
         // Ping remote peer
         const peerId = peerIdFromString(peerIdString);
-        // TODO: Pass optional abort for ping timeout (lesser than this._pingInterval)
         const latency = await this._node.ping(peerId);
-
-        // TODO: Update latency when ping fails?
 
         // Update latency values with latest
         const length = latencyValues.unshift(latency);
