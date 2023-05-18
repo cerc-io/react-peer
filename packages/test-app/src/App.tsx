@@ -1,14 +1,17 @@
 import React, { useContext, useEffect } from 'react';
+
 import {
   PeerContext,
   Metrics,
-  SelfInfo,
-  Connections,
-  NetworkGraph,
-  PeersGraph
+  NetworkGraph
 } from '@cerc-io/react-peer'
-
-import { getPseudonymForPeerId, Peer } from '@cerc-io/peer';
+import {
+  SelfInfo,
+  PeersGraph,
+  Connections
+} from '@cerc-io/react-libp2p-debug'
+import { getPseudonymForPeerId } from '@cerc-io/libp2p-util';
+import { Peer } from '@cerc-io/peer';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AppBar, Box, Card, CardContent, CssBaseline, Toolbar, Typography } from '@mui/material';
 
@@ -97,18 +100,31 @@ function App() {
         >
           <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
-              <SelfInfo relayNodes={config.relayNodes ?? []} />
+              <SelfInfo
+                enablePrimaryRelaySupport
+                relayNodes={config.relayNodes ?? []}
+                node={peer?.node}
+                primaryRelayMultiaddr={peer?.relayNodeMultiaddr}
+              />
             </CardContent>
           </Card>
           <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
               <Typography><b>Graph (Peers)</b></Typography>
-              <PeersGraph />
+              <PeersGraph
+                node={peer?.node}
+                enablePrimaryRelaySupport
+                primaryRelayMultiaddr={peer?.relayNodeMultiaddr}
+              />
             </CardContent>
           </Card>
           <Card sx={STYLES.debugCard} raised>
             <CardContent sx={STYLES.cardContent}>
-              <Connections />
+              <Connections
+                node={peer?.node}
+                enablePrimaryRelaySupport
+                primaryRelayMultiaddr={peer?.relayNodeMultiaddr}
+              />
             </CardContent>
           </Card>
           <Card sx={STYLES.debugCard} raised>

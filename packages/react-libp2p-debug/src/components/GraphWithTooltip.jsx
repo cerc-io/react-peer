@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Box, Popover, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 
@@ -12,7 +12,7 @@ const STYLES = {
 
 const DEFAULT_CONTAINER_HEIGHT = (window.innerHeight / 2) - 40
 
-function GraphWithTooltip ({ data, nodeCharge, containerHeight }) {
+export function GraphWithTooltip ({ data, nodeCharge, containerHeight }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const [hoveredNode, setHoveredNode] = useState(null)
 
@@ -32,6 +32,7 @@ function GraphWithTooltip ({ data, nodeCharge, containerHeight }) {
       />
       <Popover
         id="mouse-over-popover"
+        disableScrollLock
         sx={STYLES.popover}
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
@@ -66,5 +67,3 @@ function GraphWithTooltip ({ data, nodeCharge, containerHeight }) {
     </Box>
   )
 }
-
-export default GraphWithTooltip;

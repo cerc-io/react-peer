@@ -1,10 +1,9 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
-import { getPseudonymForPeerId } from '@cerc-io/peer';
+import { PeersLatencyTracker, getPeerConnectionsInfo, getPseudonymForPeerId, isPrimaryRelay } from '@cerc-io/libp2p-util';
 import { Box, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 
 import { useForceUpdate } from '../hooks/forceUpdate';
-import { PeerContext } from '../context/PeerContext';
 import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
 import { useThrottledCallback } from '../hooks/throttledCallback';
 
@@ -17,26 +16,42 @@ const STYLES = {
   }
 }
 
-export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...props }) {
-  const peer = useContext(PeerContext);
+export function Connections ({
+  node,
+  enablePrimaryRelaySupport,
+  primaryRelayMultiaddr,
+  refreshInterval = DEFAULT_REFRESH_INTERVAL,
+  ...props
+}) {
   const forceUpdate = useForceUpdate();
+  const peersLatencyTrackerRef = useRef(null);
 
   // Set leading false to render UI after the events have triggered
   const throttledForceUpdate = useThrottledCallback(forceUpdate, THROTTLE_WAIT_TIME, { leading: false });
 
   useEffect(() => {
-    if (!peer || !peer.node) {
+    if (node) {
+      peersLatencyTrackerRef.current = new PeersLatencyTracker(node, { pingInterval: refreshInterval });
+
+      return () => {
+        peersLatencyTrackerRef.current.destroy();
+      };
+    }
+  }, [node, refreshInterval]);
+
+  useEffect(() => {
+    if (!node) {
       return;
     }
 
-    peer.node.addEventListener('peer:connect', throttledForceUpdate);
-    peer.node.addEventListener('peer:disconnect', throttledForceUpdate);
+    node.addEventListener('peer:connect', throttledForceUpdate);
+    node.addEventListener('peer:disconnect', throttledForceUpdate);
 
     return () => {
-      peer.node?.removeEventListener('peer:connect', throttledForceUpdate);
-      peer.node?.removeEventListener('peer:disconnect', throttledForceUpdate);
+      node.removeEventListener('peer:connect', throttledForceUpdate);
+      node.removeEventListener('peer:disconnect', throttledForceUpdate);
     }
-  }, [peer, throttledForceUpdate])
+  }, [node, throttledForceUpdate])
 
   useEffect(() => {
     // TODO: Add event for connection close and remove refresh in interval
@@ -47,16 +62,28 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
     }
   }, [throttledForceUpdate])
 
+  const getNodeType = useCallback((connection) => {
+    let nodeType = 'Peer'
+
+    if (enablePrimaryRelaySupport) {
+      if (connection.isPeerRelay) {
+        nodeType = isPrimaryRelay(connection.multiaddr, primaryRelayMultiaddr) ? 'Relay (Primary)' : 'Relay (Secondary)';
+      }
+    }
+
+    return nodeType;
+  }, [enablePrimaryRelaySupport, primaryRelayMultiaddr])
+
   return (
     <Box {...props}>
       <Typography variant="subtitle2" color="inherit" noWrap>
         <b>
           Remote Peer Connections
           &nbsp;
-          <Chip size="small" label={peer?.node.getConnections().length ?? 0} variant="outlined" />
+          <Chip size="small" label={node?.getConnections().length ?? 0} variant="outlined" />
         </b>
       </Typography>
-      {peer && peer.getPeerConnectionsInfo().map(connection => (
+      {node && getPeerConnectionsInfo(node).map(connection => (
         <TableContainer sx={STYLES.connectionsTable} key={connection.id} component={Paper}>
           <Table size="small">
             <TableBody>
@@ -74,18 +101,11 @@ export function Connections ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, ...pr
                 <TableCell size="small" sx={STYLES.connectionsTableFirstColumn}><b>Peer ID</b></TableCell>
                 <TableCell size="small">{`${connection.peerId} ( ${getPseudonymForPeerId(connection.peerId)} )`}</TableCell>
                 <TableCell align="right"><b>Node type</b></TableCell>
-                <TableCell>
-                  {
-                    connection.isPeerRelay
-                      ? connection.isPeerRelayPrimary ? "Relay (Primary)" : "Relay (Secondary)"
-                      : "Peer"
-                  }
-                </TableCell>
+                <TableCell>{getNodeType(connection)}</TableCell>
                 <TableCell size="small" align="right"><b>Latency (ms)</b></TableCell>
                 <TableCell size="small" colSpan={3}>
                   {
-                    connection.latency
-                      .map((value, index) => {
+                    peersLatencyTrackerRef.current?.getLatencyValues(connection.peerId)?.map((value, index) => {
                         return index === 0 ?
                           (<span key={index}><b>{value}</b>&nbsp;</span>) :
                           (<span key={index}>{value}&nbsp;</span>)

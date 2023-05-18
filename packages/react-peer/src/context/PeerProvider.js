@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { Peer, createPeerId, getPseudonymForPeerId } from '@cerc-io/peer';
+import { getPseudonymForPeerId } from '@cerc-io/libp2p-util';
+import { Peer, createPeerId } from '@cerc-io/peer';
 
 import { PeerContext } from './PeerContext';
 

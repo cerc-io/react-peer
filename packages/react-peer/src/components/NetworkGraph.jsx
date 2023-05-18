@@ -3,12 +3,10 @@ import React, { useState, useCallback, useContext, useEffect, useMemo } from 're
 import { Box } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { updateGraphDataWithDebugInfo } from '@cerc-io/libp2p-util';
+import { useThrottledCallback, GraphWithTooltip, DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '@cerc-io/react-libp2p-debug';
 
 import { PeerContext } from '../context/PeerContext';
-import { DEFAULT_REFRESH_INTERVAL, THROTTLE_WAIT_TIME } from '../constants';
-import GraphWithTooltip from './GraphWithTooltip';
-import { useThrottledCallback } from '../hooks/throttledCallback';
-import { updateGraphDataWithDebugInfo } from '../utils';
 
 const STYLES = {
   container: {
@@ -72,7 +70,15 @@ export function NetworkGraph ({ refreshInterval = DEFAULT_REFRESH_INTERVAL, sx, 
       }, new Map());
 
       newDebugInfos.forEach(debugInfo => {
-        ({nodesMap, linksMap} = updateGraphDataWithDebugInfo(peer, debugInfo, nodesMap, linksMap))
+        ({nodesMap, linksMap} = updateGraphDataWithDebugInfo(
+          peer.node,
+          debugInfo,
+          {
+            nodesMap,
+            linksMap,
+            primaryRelayMultiaddr: peer.relayNodeMultiaddr
+          }
+        ))
       });
 
       return {
