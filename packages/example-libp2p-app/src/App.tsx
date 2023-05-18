@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Libp2p } from '@cerc-io/libp2p';
+import { Libp2p } from 'libp2p';
 import { DebugPanel } from '@cerc-io/react-libp2p-debug';
 
 import logo from './logo.svg';

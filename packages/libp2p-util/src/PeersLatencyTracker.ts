@@ -1,4 +1,4 @@
-import type { Libp2p } from '@cerc-io/libp2p';
+import type { Libp2p } from 'libp2p';
 import { peerIdFromString } from '@libp2p/peer-id';
 
 import debug from 'debug';

@@ -1,9 +1,9 @@
-import { webSockets } from '@libp2p/websockets'
-import { createLibp2p, Libp2p } from '@cerc-io/libp2p';
+import { createLibp2p, Libp2p } from 'libp2p';
+
+import { webSockets } from '@libp2p/websockets';
 import { webRTCStar } from '@libp2p/webrtc-star';
 import { noise } from '@chainsafe/libp2p-noise';
 import { mplex } from '@libp2p/mplex';
-import { bootstrap } from '@libp2p/bootstrap';
 
 // Reference for using libp2p in browser
 // https://github.com/libp2p/js-libp2p/blob/v0.42.2/examples/libp2p-in-the-browser/index.js
@@ -28,13 +28,7 @@ export const initLibp2p = async (): Promise<Libp2p> => {
     connectionEncryption: [noise()],
     streamMuxers: [mplex()],
     peerDiscovery: [
-      wrtcStar.discovery,
-      bootstrap({
-        list: [
-          '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
-          '/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb'
-        ]
-      })
+      wrtcStar.discovery
     ]
   })
 

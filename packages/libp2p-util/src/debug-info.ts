@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import type { Libp2p } from '@cerc-io/libp2p';
+import type { Libp2p } from 'libp2p';
 import type { Direction } from '@libp2p/interface-connection';
 import { multiaddr, Multiaddr } from '@multiformats/multiaddr';
 
