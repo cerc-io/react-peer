@@ -89,13 +89,11 @@ export const updateGraphDataWithDebugInfo = (
       pseudonym: getPseudonymForPeerId(conn.peerId)
     };
 
-    // Set relay node in the graph
-    if ('isPeerRelay' in conn && conn.isPeerRelay) {
-      nodeData.colorIndex = GRAPH_NODE_COLOR.yellow;
-      nodeData.label = 'Relay';
-
-      if (primaryRelayMultiaddr) {
-        nodeData.label = 'Relay (primary)';
+    // Set relay node in the graph if primary relay passed
+    if (primaryRelayMultiaddr) {
+      if ('isPeerRelay' in conn && conn.isPeerRelay) {
+        nodeData.colorIndex = GRAPH_NODE_COLOR.yellow;
+        nodeData.label = 'Relay (secondary)';
 
         // Modify self peer's primary relay (if provided) in the graph
         if (conn.multiaddr === primaryRelayMultiaddr.toString()) {

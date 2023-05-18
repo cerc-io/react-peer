@@ -65,11 +65,9 @@ export function Connections ({
   const getNodeType = useCallback((connection) => {
     let nodeType = 'Peer'
 
-    if (connection.isPeerRelay) {
-      nodeType = 'Relay';
-
-      if (enablePrimaryRelaySupport) {
-        nodeType = isPrimaryRelay(connection.multiaddr, primaryRelayMultiaddr) ? nodeType.concat(' (Primary)') : nodeType.concat(' (Secondary)');
+    if (enablePrimaryRelaySupport) {
+      if (connection.isPeerRelay) {
+        nodeType = isPrimaryRelay(connection.multiaddr, primaryRelayMultiaddr) ? 'Relay (Primary)' : 'Relay (Secondary)';
       }
     }
 
