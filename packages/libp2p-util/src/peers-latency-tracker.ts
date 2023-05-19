@@ -61,6 +61,7 @@ export class PeersLatencyTracker {
 
   // Set ping method for old or new version of libp2p
   _setPingMethod () {
+    // Check if ping method exists in libp2p instance for versions < 0.45.0
     if ('ping' in this._node) {
       this._ping = this._node.ping.bind(this._node);
       return;
@@ -70,6 +71,7 @@ export class PeersLatencyTracker {
     // eslint-disable-next-line dot-notation
     const services = this._node['services'] as Record<string, unknown>;
 
+    // For libp2p versions > 0.45.0 check if Ping service is configured in libp2p instance
     if (services.ping) {
       const pingService = services.ping as PingService;
       this._ping = pingService.ping.bind(pingService);

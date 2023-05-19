@@ -36,10 +36,13 @@ export function SelfInfo ({
       return
     }
 
+    // Check if addEventListener exists in peerStore
+    // https://github.com/libp2p/js-libp2p/blob/master/doc/migrations/v0.44-v0.45.md#atomic-peer-store-methods
     if (node.peerStore.addEventListener) {
-      // https://github.com/libp2p/js-libp2p/blob/master/doc/migrations/v0.44-v0.45.md#atomic-peer-store-methods
+      // In libp2p versions < 0.45.0 listener for change:multiaddrs event can be used
       node.peerStore.addEventListener('change:multiaddrs', throttledUpdateInfo)
     } else {
+      // In libp2p versions > 0.45.0 listener for self:peer:update event can be used
       // https://github.com/libp2p/js-libp2p/blob/master/doc/migrations/v0.44-v0.45.md#selfpeerupdate
       node.addEventListener('self:peer:update', throttledUpdateInfo)
     }

@@ -49,7 +49,7 @@ export const initLibp2p = async (): Promise<Libp2p> => {
     const peerInfo = evt.detail
     console.log(`Found peer ${peerInfo.id.toString()}`)
 
-    // dial them when we discover them
+    // Dial them when we discover them
     libp2p.dial(peerInfo.id).catch(err => {
       console.log(`Could not dial ${peerInfo.id.toString()}`, err)
     })
