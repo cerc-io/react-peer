@@ -1,6 +1,6 @@
 {
   "name": "@cerc-io/react-peer",
-  "version": "0.2.36",
+  "version": "0.2.37",
   "description": "react-peer React component",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -18,9 +18,9 @@
     "test:watch": "nwb test-react --server"
   },
   "dependencies": {
-    "@cerc-io/libp2p-util": "^0.2.36",
+    "@cerc-io/libp2p-util": "^0.2.37",
     "@cerc-io/peer": "^0.2.50",
-    "@cerc-io/react-libp2p-debug": "^0.2.36",
+    "@cerc-io/react-libp2p-debug": "^0.2.37",
     "@mui/lab": "^5.0.0-alpha.121",
     "@mui/material": "^5.11.3",
     "convert": "^4.10.0",
