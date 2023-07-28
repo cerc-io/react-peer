@@ -1,6 +1,6 @@
 {
   "name": "@cerc-io/react-libp2p-debug",
-  "version": "0.2.34",
+  "version": "0.2.35",
   "description": "react-libp2p-debug React component",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -29,10 +29,10 @@
     "react-dom": "^18.2.0"
   },
   "dependencies": {
-    "@cerc-io/libp2p-util": "^0.2.34",
+    "@cerc-io/libp2p-util": "^0.2.35",
+    "@mui/icons-material": "^5.11.3",
     "@mui/lab": "^5.0.0-alpha.121",
     "@mui/material": "^5.11.3",
-    "@mui/icons-material": "^5.11.3",
     "d3": "^5.5.0",
     "lodash": "^4.17.21",
     "use-resize-observer": "^9.1.0"
