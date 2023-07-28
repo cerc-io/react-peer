@@ -1,6 +1,6 @@
 {
   "name": "@cerc-io/libp2p-util",
-  "version": "0.2.34",
+  "version": "0.2.35",
   "description": "libp2p utils module",
   "main": "dist/index.js",
   "exports": "./dist/index.js",
@@ -15,7 +15,6 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.47.1",
     "@typescript-eslint/parser": "^5.47.1",
-    "libp2p": "^0.42.2",
     "eslint": "^8.35.0",
     "eslint-config-semistandard": "^15.0.1",
     "eslint-config-standard": "^16.0.3",
@@ -23,6 +22,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-standard": "^5.0.0",
+    "libp2p": "^0.42.2",
     "typescript": "^5.0.4"
   },
   "dependencies": {
