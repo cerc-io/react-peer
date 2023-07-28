@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn
+      - name: Run yarn build
+        run: |
+          yarn build --ignore @cerc-io/test-app
       - name: Configure git.vdb.to npm registry
         run: |
           npm config set @cerc-io:registry https://git.vdb.to/api/packages/cerc-io/npm/

@@ -1,6 +1,6 @@
 {
   "name": "@cerc-io/react-libp2p-debug",
-  "version": "0.2.36",
+  "version": "0.2.37",
   "description": "react-libp2p-debug React component",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -14,7 +14,6 @@
   "scripts": {
     "build": "nwb build-react-component --no-demo",
     "clean": "nwb clean-module && nwb clean-demo",
-    "prepublishOnly": "npm run build",
     "start": "nwb serve-react-demo",
     "test": "nwb test-react",
     "test:coverage": "nwb test-react --coverage",
@@ -29,7 +28,7 @@
     "react-dom": "^18.2.0"
   },
   "dependencies": {
-    "@cerc-io/libp2p-util": "^0.2.36",
+    "@cerc-io/libp2p-util": "^0.2.37",
     "@mui/icons-material": "^5.11.3",
     "@mui/lab": "^5.0.0-alpha.121",
     "@mui/material": "^5.11.3",
