@@ -1,6 +1,6 @@
 {
   "name": "@cerc-io/libp2p-util",
-  "version": "0.2.35",
+  "version": "0.2.36",
   "description": "libp2p utils module",
   "main": "dist/index.js",
   "exports": "./dist/index.js",
